@@ -1,7 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::prefix('login')->group(function(){
+    Route::get('/', [LoginController::class, 'loginProcess'])->name('login');
+    Route::post('/', [LoginController::class, 'loginProcess'])->name('login-process');
+});
+Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+
+@include('backend.php');
