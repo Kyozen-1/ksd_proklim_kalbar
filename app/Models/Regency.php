@@ -9,18 +9,8 @@ class Regency extends Model
     protected $table = 'regencies';
     protected $guarded = 'id';
 
-    public function md_lsm()
+    public function kegiatan()
     {
-        return $this->hasMany('App\Models\MdLsm', 'kabupaten_kota_id');
-    }
-
-    public function galeri()
-    {
-        return $this->hasMany('App\Models\Galeri', 'kabupaten_kota_id');
-    }
-
-    public function data_deforestasi()
-    {
-        return $this->hasMany('App\Models\DataDeforestasi', 'kabupaten_kota_id');
+        return $this->hasMany('App\Models\Kegiatan', 'kabupaten_kota_id');
     }
 }
