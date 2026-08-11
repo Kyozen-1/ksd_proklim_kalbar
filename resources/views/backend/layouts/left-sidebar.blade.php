@@ -12,6 +12,12 @@
                             <span> Dashboard </span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('cms.berita.index') }}">
+                            <i class="mdi mdi-newspaper"></i>
+                            <span> Berita </span>
+                        </a>
+                    </li>
                 @endif
 
                 @if (auth()->user()->role == 'superadmin')

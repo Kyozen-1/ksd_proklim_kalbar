@@ -32,13 +32,14 @@ class ContentSecurityPolicy
             "'self'",
             "https://cdn.ckeditor.com",
             "https://unpkg.com",
+            "https://static.cloudflareinsights.com",
             env('AWS_ENDPOINT')
         ];
 
         $csp = implode('; ', [
             "default-src 'self'",
 
-            "script-src 'self' 'unsafe-inline' data: blob: https://cdn.ckeditor.com https://unpkg.com",
+            "script-src 'self' 'unsafe-inline' data: blob: https://cdn.ckeditor.com https://unpkg.com https://static.cloudflareinsights.com",
 
             "style-src 'self' 'unsafe-inline' https://cdn.ckeditor.com https://fonts.googleapis.com https://unpkg.com",
 
@@ -48,7 +49,7 @@ class ContentSecurityPolicy
             "media-src ".implode(' ', $mediaSources),
 
             "connect-src ".implode(' ', $connectSource),
-            "frame-src 'self' https://view.officeapps.live.com http://127.0.0.1:9000 https://redd.kalbarprov.app/",
+            "frame-src 'self' https://view.officeapps.live.com http://127.0.0.1:9000",
         ]);
         $response->headers->set(
             'Content-Security-Policy',
