@@ -1,5 +1,5 @@
 @extends('backend.layouts.app')
-@section('title', 'Edit | Berita | REDD++ Kalimantan Barat')
+@section('title', 'Edit | Berita | PROKLIM Kalimantan Barat')
 @section('header', 'Edit | Berita')
 
 @section('css')

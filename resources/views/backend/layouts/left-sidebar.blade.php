@@ -18,9 +18,31 @@
                             <span> Berita </span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('cms.dokumen.index') }}">
+                            <i class="mdi mdi-folder-open"></i>
+                            <span> Dokumen </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('cms.faq.index') }}">
+                            <i class="mdi mdi-frequently-asked-questions"></i>
+                            <span> FAQ </span>
+                        </a>
+                    </li>
                 @endif
 
                 @if (auth()->user()->role == 'superadmin')
+                    <li>
+                        <a href="javascript: void(0);">
+                            <i class="mdi mdi-format-list-bulleted"></i>
+                            <span> Master Data </span>
+                            <span class="menu-arrow"></span>
+                        </a>
+                        <ul class="nav-second-level" aria-expanded="false">
+                            <li><a href="{{ route('cms.master-data.jabatan.index') }}">Jabatan</a></li>
+                        </ul>
+                    </li>
                 @endif
             </ul>
 
