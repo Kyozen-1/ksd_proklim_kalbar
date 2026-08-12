@@ -15,7 +15,8 @@ class PivotGambarKegiatan extends Model
 
     public function getGambarUrlAttribute()
     {
-        return Storage::disk('minio')->url($this->image_path);
+        return Storage::disk('minio')->temporaryUrl($this->image_path,
+            now()->addMinutes(30));
     }
 
     public function kegiatan()

@@ -4,6 +4,7 @@ use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\BeritaController;
 use App\Http\Controllers\Backend\FaqController;
 use App\Http\Controllers\Backend\DokumenController;
+use App\Http\Controllers\Backend\AnggotaPelaksanaController;
 use App\Http\Controllers\Backend\MasterData\JabatanController;
 
 Route::middleware(['auth'])->prefix('cms')->group(function(){
@@ -40,6 +41,16 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::get('/edit/{id}',[DokumenController::class, 'edit'])->name('cms.dokumen.edit');
             Route::post('/update',[DokumenController::class, 'update'])->name('cms.dokumen.update');
             Route::get('/destroy/{id}',[DokumenController::class, 'destroy'])->name('cms.dokumen.destroy');
+        });
+
+        Route::prefix('anggota-pelaksana')->group(function(){
+            Route::get('/', [AnggotaPelaksanaController::class, 'index'])->name('cms.anggota-pelaksana.index');
+            Route::get('/datatable', [AnggotaPelaksanaController::class, 'datatable'])->name('cms.anggota-pelaksana.datatable');
+            Route::get('/detail/{id}', [AnggotaPelaksanaController::class, 'show'])->name('cms.anggota-pelaksana.show');
+            Route::post('/',[AnggotaPelaksanaController::class, 'store'])->name('cms.anggota-pelaksana.store');
+            Route::get('/edit/{id}',[AnggotaPelaksanaController::class, 'edit'])->name('cms.anggota-pelaksana.edit');
+            Route::post('/update',[AnggotaPelaksanaController::class, 'update'])->name('cms.anggota-pelaksana.update');
+            Route::get('/destroy/{id}',[AnggotaPelaksanaController::class, 'destroy'])->name('cms.anggota-pelaksana.destroy');
         });
     });
 

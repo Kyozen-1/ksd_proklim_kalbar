@@ -19,6 +19,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('cms.anggota-pelaksana.index') }}">
+                            <i class="mdi mdi-account-group"></i>
+                            <span> Anggota Pelaksana </span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('cms.dokumen.index') }}">
                             <i class="mdi mdi-folder-open"></i>
                             <span> Dokumen </span>

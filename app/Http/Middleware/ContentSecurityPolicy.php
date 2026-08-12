@@ -17,7 +17,7 @@ class ContentSecurityPolicy
             "data:",
             "blob:",
             "https:",
-            env('AWS_ENDPOINT')
+            "http://127.0.0.1:9000"
         ];
 
         $mediaSources = [
@@ -25,7 +25,7 @@ class ContentSecurityPolicy
             "data:",
             "blob:",
             "https:",
-            env('AWS_ENDPOINT')
+            "http://127.0.0.1:9000"
         ];
 
         $connectSource = [
@@ -33,7 +33,7 @@ class ContentSecurityPolicy
             "https://cdn.ckeditor.com",
             "https://unpkg.com",
             "https://static.cloudflareinsights.com",
-            env('AWS_ENDPOINT')
+            "http://127.0.0.1:9000"
         ];
 
         $csp = implode('; ', [

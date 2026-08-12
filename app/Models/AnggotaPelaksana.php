@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Storage;
 
 class AnggotaPelaksana extends Model
 {
@@ -20,5 +21,11 @@ class AnggotaPelaksana extends Model
     public function pivot_anggota_kegiatan()
     {
         return $this->hasMany('App\Models\PivotAnggotaKegiatan', 'anggota_kegiatan_id');
+    }
+
+    public function getFotoPathAttribute()
+    {
+        return Storage::disk('minio')->temporaryUrl($this->foto,
+            now()->addMinutes(30));
     }
 }
