@@ -46,7 +46,7 @@ class KegiatanController extends Controller
             ->addIndexColumn()
             ->addColumn('aksi', function($data){
                 $id = $data['id'];
-                $button_edit = '<a href="'.route('cms.berita.edit', ['id' => $id]).'" class="edit btn btn-icon waves-effect btn-warning" title="Edit Data"><i class="fas fa-edit"></i></a>';
+                $button_edit = '<a href="'.route('cms.kegiatan.edit', ['id' => $id]).'" class="edit btn btn-icon waves-effect btn-warning" title="Edit Data"><i class="fas fa-edit"></i></a>';
                 $button_delete = '<button type="button" name="delete" id="'.$id.'" class="delete btn btn-icon waves-effect btn-danger" title="Delete Data"><i class="fas fa-trash"></i></button>';
                 $button = $button_edit . ' ' . $button_delete;
                 return $button;
@@ -98,7 +98,6 @@ class KegiatanController extends Controller
             'judul' => 'required',
             'tanggal' => 'required',
             'anggota_pelaksana' => 'required',
-            'link_yt' => 'required',
             'kabupaten_kota_id' => 'required',
             'tempat' => 'required',
             'alamat' => 'required',
@@ -112,7 +111,10 @@ class KegiatanController extends Controller
             $kegiatan->kabupaten_kota_id = Crypt::decryptString($request->kabupaten_kota_id);
             $kegiatan->judul = $request->judul;
             $kegiatan->deskripsi = Purifier::clean($request->deskripsi,'news');
-            $kegiatan->link_yt = $this->parseLinkYt($request->link_yt);
+            if($request->link_yt)
+            {
+                $kegiatan->link_yt = $this->parseLinkYt($request->link_yt);
+            }
             $kegiatan->tanggal = $request->tanggal;
             $kegiatan->tempat = $request->tempat;
             $kegiatan->alamat = $request->alamat;
@@ -194,5 +196,149 @@ class KegiatanController extends Controller
         }
 
         return 'https://www.youtube.com/embed/' . $youtubeId;
+    }
+
+    public function edit($id)
+    {
+        $id = Crypt::decryptString($id);
+
+        $getData = Kegiatan::find($id);
+        $gambar = $getData->pivot_gambar_kegiatan
+                    ->map(function ($item) {
+                        return [
+                            'source' => $item->gambar_url,
+                            'path'   => $item->gambar_url,
+                            'just_path' => $item->image_path
+                        ];
+                    });
+        $anggotaPelaksana = [];
+        foreach ($getData->pivot_anggota_kegiatan as $anggota) {
+            $anggotaPelaksana[] = $anggota->anggota_pelaksana->nama;
+        }
+
+        $data = [
+            'judul' => $getData->judul,
+            'deskripsi' => $getData->deskripsi,
+            'link_yt' => $getData->link_yt,
+            'tanggal' => $getData->tanggal,
+            'tempat' => $getData->tempat,
+            'alamat' => $getData->alamat,
+            'kabupaten_kota' => $getData->kabupaten_kota->name,
+            'gambar' => $gambar,
+            'anggota_pelaksana' => $anggotaPelaksana
+        ];
+        return view('backend.kegiatan.edit',[
+            'id' => Crypt::encryptString($id),
+            'kegiatan' => $data,
+            'anggotaPelaksanas' => $this->getAnggotaPelaksana(),
+            'kabupatenKotas' => $this->getKabupatenKota()
+        ]);
+    }
+
+    public function update(Request $request, $id, FileStorageInterface $storage)
+    {
+        $request->validate([
+            'judul' => 'required',
+            'tanggal' => 'required',
+            'anggota_pelaksana' => 'required',
+            'kabupaten_kota_id' => 'required',
+            'tempat' => 'required',
+            'alamat' => 'required',
+            'deskripsi' => 'required',
+        ]);
+
+        try {
+            $id = Crypt::decryptString($id);
+            $kegiatan = Kegiatan::find($id);
+            $kegiatan->kabupaten_kota_id = Crypt::decryptString($request->kabupaten_kota_id);
+            $kegiatan->judul = $request->judul;
+            $kegiatan->deskripsi = Purifier::clean($request->deskripsi,'news');
+            $kegiatan->link_yt = $this->parseLinkYt($request->link_yt);
+            $kegiatan->tanggal = $request->tanggal;
+            $kegiatan->tempat = $request->tempat;
+            $kegiatan->alamat = $request->alamat;
+            $kegiatan->save();
+
+            $existingImages = $request->existing_images ?? [];
+
+            $newImages = [];
+
+            if ($request->hasFile('gambar')) {
+
+                foreach ($request->file('gambar') as $file) {
+                    $path = $storage->upload(
+                        $file,
+                        'kegiatan'
+                    );
+
+                    $newImages[] = $path;
+                }
+            }
+
+            $finalImages = array_merge(
+                $existingImages,
+                $newImages
+            );
+
+            $oldImages = $kegiatan
+                        ->pivot_gambar_kegiatan
+                        ->pluck('image_path')
+                        ->toArray();
+
+            $deletedImages = array_diff(
+                                $oldImages,
+                                $finalImages
+                            );
+
+            PivotGambarKegiatan::where(
+                'kegiatan_id',
+                $id
+            )->delete();
+
+            foreach ($finalImages as $image) {
+                $pivot = new PivotGambarKegiatan;
+                $pivot->kegiatan_id = $kegiatan->id;
+                $pivot->nama = basename($image);
+                $pivot->image_path = $image;
+                $pivot->save();
+            }
+
+            foreach ($deletedImages as $image) {
+                $storage->delete(
+                    $image
+                );
+            }
+
+            foreach ($kegiatan->pivot_anggota_kegiatan as $anggota) {
+                PivotAnggotaKegiatan::find($anggota->id)->delete();
+            }
+
+            $anggotaKegiatan = $request->anggota_pelaksana;
+            for ($i=0; $i < count($anggotaKegiatan); $i++) {
+                $anggota = new PivotAnggotaKegiatan;
+                $anggota->kegiatan_id = $kegiatan->id;
+                $anggota->anggota_pelaksana_id = Crypt::decryptString($anggotaKegiatan[$i]);
+                $anggota->save();
+            }
+
+            Alert::success('Berhasil', 'kegiatan berhasil diubah');
+            return redirect()->route('cms.kegiatan.index');
+        } catch (\Throwable $th) {
+            return back()->with('failed', $th->getMessage());
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $id = Crypt::decryptString($id);
+            $kegiatan = Kegiatan::find($id);
+            $kegiatan->status_aktif = '0';
+            $kegiatan->save();
+
+            return response()->json(['success' => 'Berhasil menghapus data']);
+        } catch (\Throwable $th) {
+            return response()->json(['errors' => $th->getMessage()]);
+        }
     }
 }
