@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pivot_gambar_kegiatans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kegiatan_id')->nullable();
-            $table->foreign('kegiatan_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('kegiatan_id')->references('id')->on('kegiatans')->onDelete('cascade');
             $table->string('nama')->nullable();
             $table->string('image_path')->nullable();
             $table->enum('status_aktif', ['1', '0']);

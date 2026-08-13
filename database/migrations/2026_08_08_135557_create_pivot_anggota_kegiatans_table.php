@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pivot_anggota_kegiatans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kegiatan_id')->nullable();
-            $table->foreign('kegiatan_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('kegiatan_id')->references('id')->on('kegiatans')->onDelete('cascade');
             $table->foreignId('anggota_pelaksana_id')->nullable();
             $table->foreign('anggota_pelaksana_id')->references('id')->on('anggota_pelaksanas')->onDelete('cascade');
             $table->enum('status_aktif', ['1', '0']);

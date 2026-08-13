@@ -2,6 +2,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\BeritaController;
+use App\Http\Controllers\Backend\KegiatanController;
 use App\Http\Controllers\Backend\FaqController;
 use App\Http\Controllers\Backend\DokumenController;
 use App\Http\Controllers\Backend\AnggotaPelaksanaController;
@@ -51,6 +52,16 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::get('/edit/{id}',[AnggotaPelaksanaController::class, 'edit'])->name('cms.anggota-pelaksana.edit');
             Route::post('/update',[AnggotaPelaksanaController::class, 'update'])->name('cms.anggota-pelaksana.update');
             Route::get('/destroy/{id}',[AnggotaPelaksanaController::class, 'destroy'])->name('cms.anggota-pelaksana.destroy');
+        });
+
+        Route::prefix('kegiatan')->group(function(){
+            Route::get('/',[KegiatanController::class, 'index'])->name('cms.kegiatan.index');
+            Route::get('/create',[KegiatanController::class, 'create'])->name('cms.kegiatan.create');
+            Route::get('/datatable',[KegiatanController::class, 'datatable'])->name('cms.kegiatan.datatable');
+            Route::post('/',[KegiatanController::class, 'store'])->name('cms.kegiatan.store');
+            Route::get('/edit/{id}',[KegiatanController::class, 'edit'])->name('cms.kegiatan.edit');
+            Route::post('/update/{id}',[KegiatanController::class, 'update'])->name('cms.kegiatan.update');
+            Route::get('/destroy/{id}',[KegiatanController::class, 'destroy'])->name('cms.kegiatan.destroy');
         });
     });
 

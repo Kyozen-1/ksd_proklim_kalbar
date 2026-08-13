@@ -19,6 +19,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('cms.kegiatan.index') }}">
+                            <i class="mdi mdi-post-outline"></i>
+                            <span> Kegiatan </span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('cms.anggota-pelaksana.index') }}">
                             <i class="mdi mdi-account-group"></i>
                             <span> Anggota Pelaksana </span>

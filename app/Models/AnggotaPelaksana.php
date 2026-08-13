@@ -28,4 +28,9 @@ class AnggotaPelaksana extends Model
         return Storage::disk('minio')->temporaryUrl($this->foto,
             now()->addMinutes(30));
     }
+
+    public function kabupaten_kota()
+    {
+        return $this->belongsTo('App\Models\Regency', 'kabupaten_kota_id');
+    }
 }

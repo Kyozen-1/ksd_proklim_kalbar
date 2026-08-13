@@ -122,7 +122,7 @@ class AnggotaPelaksanaController extends Controller
 
             $anggotaPelaksana->save();
 
-            return response()->json(['success' => 'Berhasil menambahkan file di anggota pelaksana']);
+            return response()->json(['success' => 'Berhasil menambahkan anggota pelaksana']);
         } catch (\Throwable $th) {
             return response()->json(['errors' => $th->getMessage()]);
         }
