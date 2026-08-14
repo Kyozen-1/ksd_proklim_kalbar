@@ -39,11 +39,11 @@ class ContentSecurityPolicy
         $csp = implode('; ', [
             "default-src 'self'",
 
-            "script-src 'self' 'unsafe-inline' data: blob: https://cdn.ckeditor.com https://unpkg.com https://static.cloudflareinsights.com",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdn.ckeditor.com https://unpkg.com https://static.cloudflareinsights.com https://cdn.jsdelivr.net",
 
-            "style-src 'self' 'unsafe-inline' https://cdn.ckeditor.com https://fonts.googleapis.com https://unpkg.com",
+            "style-src 'self' 'unsafe-inline' https://cdn.ckeditor.com https://fonts.googleapis.com https://unpkg.com https://cdnjs.cloudflare.com/",
 
-            "font-src 'self' data: https://fonts.gstatic.com https://unpkg.com",
+            "font-src 'self' data: https://fonts.gstatic.com https://unpkg.com https://cdnjs.cloudflare.com",
 
             "img-src ".implode(' ', $imgSources),
             "media-src ".implode(' ', $mediaSources),
