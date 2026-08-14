@@ -6,7 +6,9 @@ use App\Http\Controllers\Backend\KegiatanController;
 use App\Http\Controllers\Backend\FaqController;
 use App\Http\Controllers\Backend\DokumenController;
 use App\Http\Controllers\Backend\AnggotaPelaksanaController;
+use App\Http\Controllers\Backend\LandingPageController;
 use App\Http\Controllers\Backend\MasterData\JabatanController;
+use App\Http\Controllers\Backend\MasterData\SectionLandingPageController;
 
 Route::middleware(['auth'])->prefix('cms')->group(function(){
     Route::middleware('check_role:superadmin,admin')->group(function(){
@@ -66,6 +68,16 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
     });
 
     Route::middleware('check_role:superadmin')->group(function(){
+        Route::prefix('landing-page')->group(function(){
+            Route::get('/', [LandingPageController::class, 'index'])->name('cms.landing-page.index');
+            Route::get('/datatable', [LandingPageController::class, 'datatable'])->name('cms.landing-page.datatable');
+            Route::get('/create', [LandingPageController::class, 'create'])->name('cms.landing-page.create');
+            Route::post('/', [LandingPageController::class, 'store'])->name('cms.landing-page.store');
+            Route::get('/edit/{id}', [LandingPageController::class, 'edit'])->name('cms.landing-page.edit');
+            Route::post('/update/{id}', [LandingPageController::class, 'update'])->name('cms.landing-page.update');
+            Route::get('/destroy/{id}', [LandingPageController::class, 'destroy'])->name('cms.landing-page.destroy');
+        });
+
         Route::prefix('master-data')->group(function(){
             Route::prefix('jabatan')->group(function(){
                 Route::get('/', [JabatanController::class, 'index'])->name('cms.master-data.jabatan.index');
@@ -75,6 +87,16 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
                 Route::get('/edit/{id}',[JabatanController::class, 'edit'])->name('cms.master-data.jabatan.edit');
                 Route::post('/update',[JabatanController::class, 'update'])->name('cms.master-data.jabatan.update');
                 Route::get('/destroy/{id}',[JabatanController::class, 'destroy'])->name('cms.master-data.jabatan.destroy');
+            });
+
+            Route::prefix('section-landing-page')->group(function(){
+                Route::get('/', [SectionLandingPageController::class, 'index'])->name('cms.master-data.section-landing-page.index');
+                Route::get('/datatable', [SectionLandingPageController::class, 'datatable'])->name('cms.master-data.section-landing-page.datatable');
+                Route::get('/detail/{id}', [SectionLandingPageController::class, 'show'])->name('cms.master-data.section-landing-page.show');
+                Route::post('/',[SectionLandingPageController::class, 'store'])->name('cms.master-data.section-landing-page.store');
+                Route::get('/edit/{id}',[SectionLandingPageController::class, 'edit'])->name('cms.master-data.section-landing-page.edit');
+                Route::post('/update',[SectionLandingPageController::class, 'update'])->name('cms.master-data.section-landing-page.update');
+                Route::get('/destroy/{id}',[SectionLandingPageController::class, 'destroy'])->name('cms.master-data.section-landing-page.destroy');
             });
         });
     });
