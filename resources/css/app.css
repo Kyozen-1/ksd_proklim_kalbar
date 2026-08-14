@@ -4,9 +4,51 @@
 @source '../../storage/framework/views/*.php';
 @source "../**/*.blade.php";
 @source "../**/*.js";
-@source "../**/*.vue";
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Inter', 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    
+    --color-emerald-950: #022c22;
+    --color-emerald-900: #064e3b;
+    --color-emerald-800: #065f46;
+    --color-emerald-600: #059669;
+    --color-emerald-500: #10b981;
+    --color-forest: #0B3C2D;
+    --color-leaf: #16A34A;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        font-family: var(--font-sans);
+    }
+}
+
+/* 20 Bold Typography Style: Inter, 700, 20px, Line-height 100%, Letter-spacing 0% */
+.font-medium-20, .text-20-medium {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 100%;
+    letter-spacing: 0;
+}
+
+/* Custom Utilities for Premium Look */
+.glass-nav {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.gradient-hero {
+    background: linear-gradient(135deg, #0B3C2D 0%, #064E3B 50%, #047857 100%);
+}
+
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(6, 78, 59, 0.1), 0 8px 10px -6px rgba(6, 78, 59, 0.05);
 }
