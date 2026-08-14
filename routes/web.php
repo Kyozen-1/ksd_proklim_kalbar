@@ -1,8 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Frontend\HomeController;
 
+Route::prefix('login')->group(function(){
+    Route::get('/', [LoginController::class, 'index'])->name('login');
+    Route::post('/', [LoginController::class, 'loginProcess'])->name('login-process');
+});
+Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+
+@include('backend.php');
 /*
 |--------------------------------------------------------------------------
 | Web Routes - Public Frontend
