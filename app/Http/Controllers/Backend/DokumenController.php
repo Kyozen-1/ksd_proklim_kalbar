@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use App\Contracts\FileStorageInterface;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Auth;
 use Validator;
@@ -213,5 +214,21 @@ class DokumenController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['errors' => $th->getMessage()]);
         }
+    }
+
+    public function file($id)
+    {
+        $id = Crypt::decryptString($id);
+        $dokumen = Dokumen::findOrFail($id);
+
+        if (!$dokumen->path) {
+            abort(404);
+        }
+
+        if (!Storage::disk('minio')->exists($dokumen->path)) {
+            abort(404);
+        }
+
+        return Storage::disk('minio')->response($dokumen->path);
     }
 }

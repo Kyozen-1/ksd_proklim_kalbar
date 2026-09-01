@@ -51,15 +51,16 @@
 @endsection
 
 @section('content')
-    <form class="form-horizontal" id="form_dokumen_galeri" method="POST" action="{{ route('cms.kegiatan.update', ['id' => $id]) }}" enctype="multipart/form-data" data-parsley-validate novalidate>
+    <form class="form-horizontal" id="form_kegiatan_edit" method="POST" action="{{ route('cms.kegiatan.update', ['id' => $id]) }}" enctype="multipart/form-data" data-parsley-validate novalidate>
         @csrf
         <div id="existing-images-container">
             @foreach($kegiatan['gambar'] as $gambar)
                 <input
                     type="hidden"
                     name="existing_images[]"
-                    value="{{ $gambar['just_path'] }}"
-                    data-path="{{ $gambar['path'] }}">
+                    value="{{ $gambar['path'] }}"
+                    data-id="{{ $gambar['id'] }}"
+                    data-source="{{ $gambar['source'] }}">
             @endforeach
         </div>
 
@@ -187,9 +188,10 @@
                                 <input
                                     type="file"
                                     class="filepond"
-                                    name="gambar[]"
+                                    id="gambar-pond"
                                     multiple
                                     accept="image/png,image/jpeg,image/jpg">
+                                <div id="new-images-container"></div>
 
                                 @error('gambar')
                                     <small class="text-danger">{{ $message }}</small>
@@ -313,48 +315,148 @@
         );
 
         const pond = FilePond.create(
-                        document.querySelector('.filepond'),
-                        {
-                            storeAsFile: true,
-
-                            files: existingImages.map(item => ({
-                                source: item.source,
-                                options: {
-                                    type: 'local'
-                                }
-                            })),
-
-                            server: {
-                                load: (source, load, error, progress, abort) => {
-
-                                    fetch(source)
-                                        .then(response => response.blob())
-                                        .then(load)
-                                        .catch(error);
-
-                                    return {
-                                        abort
-                                    };
-                                }
-                            }
+            document.querySelector('#gambar-pond'),
+            {
+                allowMultiple: true,
+                allowReorder: true,
+                maxFiles: 10,
+                acceptedFileTypes: [
+                    'image/png',
+                    'image/jpeg',
+                    'image/jpg'
+                ],
+                files: existingImages.map(item => ({
+                    source: item.source,
+                    options: {
+                        type: 'local',
+                        metadata: {
+                            existing: true,
+                            id: item.id
                         }
-                    );
-        pond.on('removefile', (error, file) => {
-            if (!file.source) {
-                return;
-            }
-            const imageUrl = file.source;
-            const hiddenInputs =
-                document.querySelectorAll(
-                    'input[name="existing_images[]"]'
-                );
-            hiddenInputs.forEach(input => {
-                const url = input.dataset.path;
-                if (url === imageUrl) {
-                    input.remove();
+                    }
+                })),
+                server: {
+                    load: (source, load, error, progress, abort) => {
+                        fetch(source)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(
+                                        'Gagal mengambil gambar'
+                                    );
+                                }
+                                return response.blob();
+                            })
+                            .then(blob => {
+                                load(blob);
+                            })
+                            .catch(err => {
+                                console.error(
+                                    'FilePond load error:',
+                                    err
+                                );
+                                error(
+                                    'Gagal memuat gambar'
+                                );
+                            });
+                        return {
+                            abort: () => {
+                                abort();
+                            }
+                        };
+                    }
                 }
-            });
-        });
+            }
+        );
+        pond.on(
+            'removefile',
+            (error, file) => {
+                if (error) {
+                    console.error(
+                        'FilePond remove error:',
+                        error
+                    );
+                    return;
+                }
+                if (!file) {
+                    return;
+                }
+                const isExisting =
+                    file.getMetadata('existing') === true;
+                if (!isExisting) {
+                    return;
+                }
+
+                const source = file.source;
+
+                document
+                    .querySelectorAll(
+                        'input[name="existing_images[]"]'
+                    )
+                    .forEach(input => {
+                        if (
+                            input.dataset.source === source
+                        ) {
+                            input.remove();
+                        }
+                    });
+            }
+        );
+
+        const form =
+            document.querySelector(
+                '#form_kegiatan_edit'
+            );
+
+        form.addEventListener(
+            'submit',
+            function (event) {
+                const container =
+                    document.querySelector(
+                        '#new-images-container'
+                    );
+                container.innerHTML = '';
+
+                const input =
+                    document.createElement('input');
+
+                input.type = 'file';
+
+                input.name = 'gambar[]';
+
+                input.multiple = true;
+
+                input.style.display = 'none';
+
+                const dataTransfer =
+                    new DataTransfer();
+
+                pond.getFiles().forEach(
+                    fileItem => {
+                        const isExisting =
+                            fileItem.getMetadata(
+                                'existing'
+                            ) === true;
+
+                        if (isExisting) {
+                            return;
+                        }
+
+                        if (fileItem.file) {
+                            dataTransfer.items.add(
+                                fileItem.file
+                            );
+                        }
+                    }
+                );
+
+                input.files =
+                    dataTransfer.files;
+
+                container.appendChild(
+                    input
+                );
+            }
+        );
 
         ClassicEditor
             .create(document.querySelector('#deskripsi'), {

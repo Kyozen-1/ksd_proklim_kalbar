@@ -24,6 +24,7 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::get('/edit/{id}',[BeritaController::class, 'edit'])->name('cms.berita.edit');
             Route::post('/update/{id}',[BeritaController::class, 'update'])->name('cms.berita.update');
             Route::get('/destroy/{id}',[BeritaController::class, 'destroy'])->name('cms.berita.destroy');
+            Route::get('/gambar/{id}', [BeritaController::class, 'gambar'])->name('cms.berita.gambar');
         });
 
         Route::prefix('faq')->group(function(){
@@ -44,6 +45,7 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::get('/edit/{id}',[DokumenController::class, 'edit'])->name('cms.dokumen.edit');
             Route::post('/update',[DokumenController::class, 'update'])->name('cms.dokumen.update');
             Route::get('/destroy/{id}',[DokumenController::class, 'destroy'])->name('cms.dokumen.destroy');
+            Route::get('/file/{id}', [DokumenController::class, 'file'])->name('cms.dokumen.file');
         });
 
         Route::prefix('anggota-pelaksana')->group(function(){
@@ -54,6 +56,7 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::get('/edit/{id}',[AnggotaPelaksanaController::class, 'edit'])->name('cms.anggota-pelaksana.edit');
             Route::post('/update',[AnggotaPelaksanaController::class, 'update'])->name('cms.anggota-pelaksana.update');
             Route::get('/destroy/{id}',[AnggotaPelaksanaController::class, 'destroy'])->name('cms.anggota-pelaksana.destroy');
+            Route::get('/gambar/{id}', [AnggotaPelaksanaController::class, 'gambar'])->name('cms.anggota-pelaksana.gambar');
         });
 
         Route::prefix('kegiatan')->group(function(){
@@ -64,6 +67,7 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::get('/edit/{id}',[KegiatanController::class, 'edit'])->name('cms.kegiatan.edit');
             Route::post('/update/{id}',[KegiatanController::class, 'update'])->name('cms.kegiatan.update');
             Route::get('/destroy/{id}',[KegiatanController::class, 'destroy'])->name('cms.kegiatan.destroy');
+            Route::get('/gambar/{id}', [KegiatanController::class, 'gambar'])->name('cms.kegiatan.gambar');
         });
     });
 
@@ -76,6 +80,7 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::get('/edit/{id}', [LandingPageController::class, 'edit'])->name('cms.landing-page.edit');
             Route::post('/update/{id}', [LandingPageController::class, 'update'])->name('cms.landing-page.update');
             Route::get('/destroy/{id}', [LandingPageController::class, 'destroy'])->name('cms.landing-page.destroy');
+            Route::get('/gambar/{path}', [LandingPageController::class, 'gambar'])->name('cms.landing-page.gambar');
         });
 
         Route::prefix('master-data')->group(function(){
