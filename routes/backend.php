@@ -9,6 +9,8 @@ use App\Http\Controllers\Backend\AnggotaPelaksanaController;
 use App\Http\Controllers\Backend\LandingPageController;
 use App\Http\Controllers\Backend\MasterData\JabatanController;
 use App\Http\Controllers\Backend\MasterData\SectionLandingPageController;
+use App\Http\Controllers\Backend\Pengaturan\ApiClientController;
+use App\Http\Controllers\Backend\Pengaturan\ApiPermissionController;
 
 Route::middleware(['auth'])->prefix('cms')->group(function(){
     Route::middleware('check_role:superadmin,admin')->group(function(){
@@ -24,6 +26,7 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::get('/edit/{id}',[BeritaController::class, 'edit'])->name('cms.berita.edit');
             Route::post('/update/{id}',[BeritaController::class, 'update'])->name('cms.berita.update');
             Route::get('/destroy/{id}',[BeritaController::class, 'destroy'])->name('cms.berita.destroy');
+            Route::get('/gambar/{id}', [BeritaController::class, 'gambar'])->name('cms.berita.gambar');
         });
 
         Route::prefix('faq')->group(function(){
@@ -44,6 +47,7 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::get('/edit/{id}',[DokumenController::class, 'edit'])->name('cms.dokumen.edit');
             Route::post('/update',[DokumenController::class, 'update'])->name('cms.dokumen.update');
             Route::get('/destroy/{id}',[DokumenController::class, 'destroy'])->name('cms.dokumen.destroy');
+            Route::get('/file/{id}', [DokumenController::class, 'file'])->name('cms.dokumen.file');
         });
 
         Route::prefix('anggota-pelaksana')->group(function(){
@@ -54,6 +58,7 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::get('/edit/{id}',[AnggotaPelaksanaController::class, 'edit'])->name('cms.anggota-pelaksana.edit');
             Route::post('/update',[AnggotaPelaksanaController::class, 'update'])->name('cms.anggota-pelaksana.update');
             Route::get('/destroy/{id}',[AnggotaPelaksanaController::class, 'destroy'])->name('cms.anggota-pelaksana.destroy');
+            Route::get('/gambar/{id}', [AnggotaPelaksanaController::class, 'gambar'])->name('cms.anggota-pelaksana.gambar');
         });
 
         Route::prefix('kegiatan')->group(function(){
@@ -64,6 +69,7 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::get('/edit/{id}',[KegiatanController::class, 'edit'])->name('cms.kegiatan.edit');
             Route::post('/update/{id}',[KegiatanController::class, 'update'])->name('cms.kegiatan.update');
             Route::get('/destroy/{id}',[KegiatanController::class, 'destroy'])->name('cms.kegiatan.destroy');
+            Route::get('/gambar/{id}', [KegiatanController::class, 'gambar'])->name('cms.kegiatan.gambar');
         });
     });
 
@@ -76,6 +82,7 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::get('/edit/{id}', [LandingPageController::class, 'edit'])->name('cms.landing-page.edit');
             Route::post('/update/{id}', [LandingPageController::class, 'update'])->name('cms.landing-page.update');
             Route::get('/destroy/{id}', [LandingPageController::class, 'destroy'])->name('cms.landing-page.destroy');
+            Route::get('/gambar/{path}', [LandingPageController::class, 'gambar'])->name('cms.landing-page.gambar');
         });
 
         Route::prefix('master-data')->group(function(){
@@ -97,6 +104,31 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
                 Route::get('/edit/{id}',[SectionLandingPageController::class, 'edit'])->name('cms.master-data.section-landing-page.edit');
                 Route::post('/update',[SectionLandingPageController::class, 'update'])->name('cms.master-data.section-landing-page.update');
                 Route::get('/destroy/{id}',[SectionLandingPageController::class, 'destroy'])->name('cms.master-data.section-landing-page.destroy');
+            });
+        });
+
+        Route::prefix('pengaturan')->group(function(){
+            Route::prefix('api-client')->group(function(){
+                Route::get('/', [ApiClientController::class, 'index'])->name('cms.pengaturan.api-client.index');
+                Route::get('/datatable', [ApiClientController::class, 'datatable'])->name('cms.pengaturan.api-client.datatable');
+                Route::post('/',[ApiClientController::class, 'store'])->name('cms.pengaturan.api-client.store');
+                Route::post('/regenerate', [ApiClientController::class, 'regenerate'])->name('cms.pengaturan.api-client.regenarate');
+                Route::get('/destroy/{id}',[ApiClientController::class, 'destroy'])->name('cms.pengaturan.api-client.destroy');
+                Route::get('/permissions/{id}', [ApiClientController::class, 'permissions'])->name('cms.pengaturan.api-client.permissions');
+                Route::post('/permissions/{id}',[ApiClientController::class, 'updatePermissions'])->name('cms.pengaturan.api-client.update-permissions');
+            });
+
+            Route::prefix('api-permission')->group(function(){
+                Route::get('/', [ApiPermissionController::class, 'index'])->name('cms.pengaturan.api-permission.index');
+                Route::post('/',[ApiPermissionController::class, 'store'])->name('cms.pengaturan.api-permission.store');
+                Route::post('/sync',[ApiPermissionController::class, 'sync'])->name('cms.pengaturan.api-permission.sync');
+                Route::get('/datatable', [ApiPermissionController::class, 'datatable'])->name('cms.pengaturan.api-permission.datatable');
+                Route::get('/create', [ApiPermissionController::class, 'create'])->name('cms.pengaturan.api-permission.create');
+                Route::get('/detail/{id}', [ApiPermissionController::class, 'show'])->name('cms.pengaturan.api-permission.show');
+                Route::get('/edit/{id}',[ApiPermissionController::class, 'edit'])->name('cms.pengaturan.api-permission.edit');
+                Route::post('/update/{id}',[ApiPermissionController::class, 'update'])->name('cms.pengaturan.api-permission.update');
+                Route::get('/destroy/{id}',[ApiPermissionController::class, 'destroy'])->name('cms.pengaturan.api-permission.destroy');
+                Route::get('/activate/{id}',[ApiPermissionController::class, 'activate'])->name('cms.pengaturan.api-permission.activate');
             });
         });
     });

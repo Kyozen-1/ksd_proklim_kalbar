@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-6">
-                2026 &copy; REDD++ Kalimantan Barat
+                2026 &copy; PROKLIM Kalimantan Barat
             </div>
             <div class="col-md-6">
             </div>

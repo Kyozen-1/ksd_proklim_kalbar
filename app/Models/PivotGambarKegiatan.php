@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Crypt;
 
 class PivotGambarKegiatan extends Model
 {
@@ -15,8 +15,9 @@ class PivotGambarKegiatan extends Model
 
     public function getGambarUrlAttribute()
     {
-        return Storage::disk('minio')->temporaryUrl($this->image_path,
-            now()->addMinutes(30));
+        return route('cms.kegiatan.gambar', [
+            'id' => Crypt::encryptString($this->id),
+        ]);
     }
 
     public function kegiatan()

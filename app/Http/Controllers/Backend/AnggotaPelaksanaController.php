@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Intervention\Image\Laravel\Facades\Image;
 use App\Contracts\FileStorageInterface;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Validator;
 use DataTables;
@@ -231,5 +232,21 @@ class AnggotaPelaksanaController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['result' => $th->getMessage()]);
         }
+    }
+
+    public function gambar($id)
+    {
+        $id = Crypt::decryptString($id);
+        $gambar = AnggotaPelaksana::findOrFail($id);
+
+        if (!$gambar->foto) {
+            abort(404);
+        }
+
+        if (!Storage::disk('minio')->exists($gambar->foto)) {
+            abort(404);
+        }
+
+        return Storage::disk('minio')->response($gambar->foto);
     }
 }

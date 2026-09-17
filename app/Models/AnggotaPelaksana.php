@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Crypt;
 
 class AnggotaPelaksana extends Model
 {
@@ -25,8 +25,9 @@ class AnggotaPelaksana extends Model
 
     public function getFotoPathAttribute()
     {
-        return Storage::disk('minio')->temporaryUrl($this->foto,
-            now()->addMinutes(30));
+        return route('cms.anggota-pelaksana.gambar', [
+            'id' => Crypt::encryptString($this->id),
+        ]);
     }
 
     public function kabupaten_kota()

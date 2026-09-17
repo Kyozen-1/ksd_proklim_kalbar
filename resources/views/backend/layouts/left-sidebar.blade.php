@@ -62,6 +62,18 @@
                             <li><a href="{{ route('cms.master-data.section-landing-page.index') }}">Section Landing Page</a></li>
                         </ul>
                     </li>
+
+                    <li>
+                        <a href="javascript: void(0);">
+                            <i class="mdi mdi-cog"></i>
+                            <span> Pengaturan </span>
+                            <span class="menu-arrow"></span>
+                        </a>
+                        <ul class="nav-second-level" aria-expanded="false">
+                            <li><a href="{{ route('cms.pengaturan.api-client.index') }}">API Client</a></li>
+                            <li><a href="{{ route('cms.pengaturan.api-permission.index') }}">API Permission</a></li>
+                        </ul>
+                    </li>
                 @endif
             </ul>
 

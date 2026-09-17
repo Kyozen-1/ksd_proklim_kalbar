@@ -9,6 +9,7 @@ use Mews\Purifier\Facades\Purifier;
 use RealRashid\SweetAlert\Facades\Alert;
 use Intervention\Image\Laravel\Facades\Image;
 use App\Contracts\FileStorageInterface;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Auth;
 use DataTables;
@@ -206,9 +207,9 @@ class KegiatanController extends Controller
         $gambar = $getData->pivot_gambar_kegiatan
                     ->map(function ($item) {
                         return [
+                            'id' => $item->id,
                             'source' => $item->gambar_url,
-                            'path'   => $item->gambar_url,
-                            'just_path' => $item->image_path
+                            'path'   => $item->image_path
                         ];
                     });
         $anggotaPelaksana = [];
@@ -245,6 +246,7 @@ class KegiatanController extends Controller
             'tempat' => 'required',
             'alamat' => 'required',
             'deskripsi' => 'required',
+            'gambar.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         try {
@@ -259,7 +261,10 @@ class KegiatanController extends Controller
             $kegiatan->alamat = $request->alamat;
             $kegiatan->save();
 
-            $existingImages = $request->existing_images ?? [];
+            $existingImages = $request->input(
+                                    'existing_images',
+                                    []
+                                );
 
             $newImages = [];
 
@@ -340,5 +345,21 @@ class KegiatanController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['errors' => $th->getMessage()]);
         }
+    }
+
+    public function gambar($id)
+    {
+        $id = Crypt::decryptString($id);
+        $gambar = PivotGambarKegiatan::findOrFail($id);
+
+        if (!$gambar->image_path) {
+            abort(404);
+        }
+
+        if (!Storage::disk('minio')->exists($gambar->image_path)) {
+            abort(404);
+        }
+
+        return Storage::disk('minio')->response($gambar->image_path);
     }
 }
