@@ -3,6 +3,37 @@
 @section('title', 'Beranda Utama - DLHK Proklim Kalimantan Barat')
 
 @section('content')
+@php
+    $heroImage = $homeHero['image_url'] ?? null;
+    $heroTitle = $homeHero['title'] ?? 'Bersama Menjaga Bumi dari';
+    $heroSubtitle = $homeHero['subtitle'] ?? 'Tapak Desa';
+    $heroDescription = $homeHero['description'] ?? 'PROKLIM (Program Kampung Iklim) Kalbar adalah gerakan kemasyarakatan berkelanjutan bentukan DLHK Kalbar guna meningkatkan kapasitas adaptasi, menurunkan emisi karbon, dan menciptakan kemandirian ekologis tangguh bencana tingkat RW/Dusun.';
+    $heroButtonText = $homeHero['button_text'] ?? 'Pelajari Cara Kerja';
+    $heroButtonLink = $homeHero['button_link'] ?? route('about');
+
+    $functionTitle = $homeFunction['title'] ?? 'Tugas Bidang PSLB3PP';
+    $functionDescription = $homeFunction['description'] ?? 'Bidang Pengelolaan Sampah, Limbah Bahan Berbahaya dan Beracun, serta Pengendalian Pencemaran (PSLB3PP) bertugas melaksanakan perumusan, koordinasi, dan evaluasi kebijakan teknis di bidang pengurangan dan penanganan sampah, pengelolaan limbah B3 (Bahan Berbahaya dan Beracun), serta pengendalian pencemaran';
+
+    $ispuTitle = $homeIspu['title'] ?? 'Ketahui Informasi Mengenai ISPU (Indeks Standar Pencemaran Udara)';
+    $ispuDescription = $homeIspu['description'] ?? 'Pantau kondisi kualitas udara secara berkala di berbagai kota dan kabupaten se-Kalimantan Barat. Dapatkan informasi parameter zat pencemar udara terkini untuk mendukung aktivitas harian yang lebih sehat';
+    $ispuButtonText = $homeIspu['button_text'] ?? 'Kunjungi Halaman';
+    $ispuButtonLink = $homeIspu['button_link'] ?? route('data');
+
+    $regulationTitle = $homeRegulation['title'] ?? 'Ketahui Peraturan Desa & Tata Kelola Baku';
+    $regulationDescription = $homeRegulation['description'] ?? 'Unduh draf regulasi, surat keputusan pimpinan daerah, serta buku saku petunjuk teknis pendaftaran SRN KLHK untuk memperlancar aksi nyata kampung iklim Anda.';
+    $regulationButtonText = $homeRegulation['button_text'] ?? 'Lihat Dokumen & Regulasi';
+    $regulationButtonLink = $homeRegulation['button_link'] ?? route('regulasi');
+
+    $officialTitle = $homeOfficial['title'] ?? 'Website Resmi DLHK Kalimantan Barat';
+    $officialDescription = $homeOfficial['description'] ?? 'Lihat informasi lengkap lainnya mengenai DLHK Kalimantan Barat melalui website resmi Dinas Lingkungan Hidup dan Kehutana Provinsi Kalimantan Barat';
+    $officialButtonText = $homeOfficial['button_text'] ?? 'Buka Website';
+    $officialButtonLink = $homeOfficial['button_link'] ?? 'https://dlhk.kalbarprov.go.id';
+
+    $visitorTitle = $homeVisitor['title'] ?? 'Kunjungi Website';
+    $visitorDescription = $homeVisitor['description'] ?? 'Total akumulasi aktivitas kunjungan per-bulan dari seluruh pengguna';
+    $visitorSubtitle = $homeVisitor['subtitle'] ?? 'Februari 2026';
+    $visitorCount = $homeVisitor['tahun'] ?? $homeVisitor['luas_hutan'] ?? '413.939';
+@endphp
 <div class="space-y-16 py-6 sm:py-8">
 
     <!-- 1. HERO SLIDER SECTION CARD -->
@@ -27,7 +58,6 @@
 
             <!-- Background Image Slides -->
             <div class="absolute inset-0 z-0">
-                <!-- Slide 1 -->
                 <div x-show="activeSlide === 1"
                      x-transition:enter="transition ease-out duration-700"
                      x-transition:enter-start="opacity-0 scale-102"
@@ -36,7 +66,7 @@
                      x-transition:leave-start="opacity-100 scale-100"
                      x-transition:leave-end="opacity-0 scale-98"
                      class="absolute inset-0 bg-cover bg-right lg:bg-center"
-                     style="background-image: url('{{ asset('frontend/img/default-slider-1.png') }}');">
+                     style="background-image: url('{{ $heroImage ?? asset('frontend/img/default-slider-1.png') }}');">
                 </div>
 
                 <!-- Slide 2 -->
@@ -92,13 +122,13 @@
 
                 <!-- Main Headline -->
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-[1.12]">
-                    Bersama Menjaga Bumi dari <br />
-                    <span class="text-[#00E58F]">Tapak Desa</span>
+                    {{ $heroTitle }} <br />
+                    <span class="text-[#00E58F]">{{ $heroSubtitle }}</span>
                 </h1>
 
                 <!-- Paragraph Description -->
                 <p class="text-slate-200/95 text-xs sm:text-sm leading-relaxed max-w-xl font-normal">
-                    PROKLIM (Program Kampung Iklim) Kalbar adalah gerakan kemasyarakatan berkelanjutan bentukan DLHK Kalbar guna meningkatkan kapasitas adaptasi, menurunkan emisi karbon, dan menciptakan kemandirian ekologis tangguh bencana tingkat RW/Dusun.
+                    {{ $heroDescription }}
                 </p>
 
                 <!-- Action Buttons -->
@@ -106,8 +136,8 @@
                     <a href="{{ route('data') }}" class="px-5 py-2.5 rounded-xl bg-slate-900/60 hover:bg-slate-900 text-white font-bold border border-slate-400/30 text-xs sm:text-sm backdrop-blur-md transition-all">
                         PROKLIM
                     </a>
-                    <a href="{{ route('about') }}" class="px-5 py-2.5 rounded-xl bg-[#00E58F] hover:bg-[#00d080] text-slate-950 font-extrabold text-xs sm:text-sm inline-flex items-center gap-1.5 shadow-lg transition-all hover:scale-105">
-                        <span>Pelajari Cara Kerja</span>
+                    <a href="{{ $heroButtonLink }}" class="px-5 py-2.5 rounded-xl bg-[#00E58F] hover:bg-[#00d080] text-slate-950 font-extrabold text-xs sm:text-sm inline-flex items-center gap-1.5 shadow-lg transition-all hover:scale-105">
+                        <span>{{ $heroButtonText }}</span>
                         <i class="fa-solid fa-chevron-right text-[10px]"></i>
                     </a>
                 </div>
@@ -127,88 +157,27 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <!-- Card 1 -->
-            <div class="bg-[#FAFCFA] rounded-xl p-5 sm:p-6 border-2 border-[#7AE3BC]/80 shadow-xs flex flex-col justify-between space-y-4">
-                <div class="flex items-start gap-4">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-[#00A86B] text-white flex items-center justify-center text-3xl sm:text-4xl font-bold shrink-0 shadow-md">
-                        <i class="fa-solid fa-house"></i>
-                    </div>
-                    <div class="min-w-0 flex-1 my-auto">
-                        <span class="text-[11px] sm:text-xs font-bold text-[#00A86B] tracking-wide uppercase block truncate">KAMPUNG IKLIM AKTIF</span>
-                        <div class="flex items-baseline gap-1 mt-0.5">
-                            <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">285</span>
+            @foreach($stats as $stat)
+                <div class="bg-[#FAFCFA] rounded-xl p-5 sm:p-6 border-2 border-[#7AE3BC]/80 shadow-xs flex flex-col justify-between space-y-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-[#00A86B] text-white flex items-center justify-center text-3xl sm:text-4xl font-bold shrink-0 shadow-md">
+                            <i class="fa-solid {{ $stat['icon'] }}"></i>
+                        </div>
+                        <div class="min-w-0 flex-1 my-auto">
+                            <span class="text-[11px] sm:text-xs font-bold text-[#00A86B] tracking-wide uppercase block truncate">{{ $stat['label'] }}</span>
+                            <div class="flex items-baseline flex-wrap gap-1 mt-0.5">
+                                <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">{{ $stat['value'] }}</span>
+                                <span class="text-[11px] sm:text-xs font-semibold text-slate-500">{{ $stat['unit'] }}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="pt-1 flex justify-start">
-                    <span class="px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-[#D8F5EA] text-[#00A86B] border border-[#A3EED4] whitespace-nowrap">
-                        2026: 12 Titik
-                    </span>
-                </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="bg-[#FAFCFA] rounded-xl p-5 sm:p-6 border-2 border-[#7AE3BC]/80 shadow-xs flex flex-col justify-between space-y-4">
-                <div class="flex items-start gap-4">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-[#00A86B] text-white flex items-center justify-center text-3xl sm:text-4xl font-bold shrink-0 shadow-md">
-                        <i class="fa-solid fa-wind"></i>
-                    </div>
-                    <div class="min-w-0 flex-1 my-auto">
-                        <span class="text-[11px] sm:text-xs font-bold text-[#00A86B] tracking-wide uppercase block truncate">REDUKSI GAS EMISI</span>
-                        <div class="flex items-baseline flex-wrap gap-1 mt-0.5">
-                            <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">24.460</span>
-                            <span class="text-[11px] sm:text-xs font-semibold text-slate-500">tCO₂e/th</span>
-                        </div>
+                    <div class="pt-1 flex justify-start">
+                        <span class="px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-[#D8F5EA] text-[#00A86B] border border-[#A3EED4] whitespace-nowrap">
+                            {{ $stat['meta'] }}
+                        </span>
                     </div>
                 </div>
-                <div class="pt-1 flex justify-start">
-                    <span class="px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-[#D8F5EA] text-[#00A86B] border border-[#A3EED4] whitespace-nowrap">
-                        2026: 10.000 tCO₂e
-                    </span>
-                </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="bg-[#FAFCFA] rounded-xl p-5 sm:p-6 border-2 border-[#7AE3BC]/80 shadow-xs flex flex-col justify-between space-y-4">
-                <div class="flex items-start gap-4">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-[#00A86B] text-white flex items-center justify-center text-3xl sm:text-4xl font-bold shrink-0 shadow-md">
-                        <i class="fa-solid fa-wind"></i>
-                    </div>
-                    <div class="min-w-0 flex-1 my-auto">
-                        <span class="text-[11px] sm:text-xs font-bold text-[#00A86B] tracking-wide uppercase block truncate">TOTAL EMISI</span>
-                        <div class="flex items-baseline flex-wrap gap-1 mt-0.5">
-                            <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">450.000</span>
-                            <span class="text-[11px] sm:text-xs font-semibold text-slate-500">tCO₂e/th</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="pt-1 flex justify-start">
-                    <span class="px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-[#D8F5EA] text-[#00A86B] border border-[#A3EED4] whitespace-nowrap">
-                        2026: 10.000 tCO₂e
-                    </span>
-                </div>
-            </div>
-
-            <!-- Card 4 -->
-            <div class="bg-[#FAFCFA] rounded-xl p-5 sm:p-6 border-2 border-[#7AE3BC]/80 shadow-xs flex flex-col justify-between space-y-4">
-                <div class="flex items-start gap-4">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-[#00A86B] text-white flex items-center justify-center text-3xl sm:text-4xl font-bold shrink-0 shadow-md">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </div>
-                    <div class="min-w-0 flex-1 my-auto">
-                        <span class="text-[11px] sm:text-xs font-bold text-[#00A86B] tracking-wide uppercase block truncate">TOTAL TPS AKTIF</span>
-                        <div class="flex items-baseline flex-wrap gap-1 mt-0.5">
-                            <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">184</span>
-                            <span class="text-[11px] sm:text-xs font-semibold text-slate-500">Unit</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="pt-1 flex justify-start">
-                    <span class="px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-[#D8F5EA] text-[#00A86B] border border-[#A3EED4] whitespace-nowrap">
-                        2026: 145 Unit
-                    </span>
-                </div>
-            </div>
+            @endforeach
         </div>
     </section>
 
@@ -220,10 +189,10 @@
             <div class="text-center max-w-4xl mx-auto space-y-3">
                 <span class="text-xs font-bold uppercase tracking-wider text-[#00E58F]">TUGAS DAN FUNGSI</span>
                 <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white">
-                    Tugas Bidang PSLB3PP
+                    {{ $functionTitle }}
                 </h2>
                 <p class="text-slate-100/90 text-xs sm:text-sm leading-relaxed max-w-3xl mx-auto pt-1 font-normal">
-                    Bidang Pengelolaan Sampah, Limbah Bahan Berbahaya dan Beracun, serta Pengendalian Pencemaran (PSLB3PP) bertugas melaksanakan perumusan, koordinasi, dan evaluasi kebijakan teknis di bidang pengurangan dan penanganan sampah, pengelolaan limbah B3 (Bahan Berbahaya dan Beracun), serta pengendalian pencemaran
+                    {{ $functionDescription }}
                 </p>
             </div>
 
@@ -304,88 +273,45 @@
             </h2>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- News Card 1 -->
-            <article class="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm card-hover flex flex-col group">
-                <div class="relative h-48 overflow-hidden bg-slate-100">
-                    <img src="{{ asset('frontend/img/default-slider-1.png') }}" alt="Berita Proklim" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                </div>
-                <div class="p-6 flex-grow flex flex-col justify-between space-y-4">
-                    <div>
-                        <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-2">
-                            <i class="fa-regular fa-calendar-check text-[#00E58F]"></i>
-                            <span>05 Aug 2026</span>
-                            <span class="mx-1">•</span>
-                            <span class="text-[#00E58F]">Program Kampung Iklim</span>
+        @if($latestNews->count())
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                @foreach($latestNews as $news)
+                    @php
+                        $cover = $news->pivot_gambar_berita->first();
+                        $imageUrl = $cover ? route('frontend.berita.image', $cover->id) : asset('frontend/img/default-slider-1.png');
+                    @endphp
+                    <a href="{{ route('berita-detail', $news->id) }}" class="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm card-hover flex flex-col group">
+                        <div class="relative h-48 overflow-hidden bg-slate-100">
+                            <img src="{{ $imageUrl }}" alt="{{ $news->judul }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         </div>
-                        <h3 class="text-base font-bold text-slate-900 leading-snug group-hover:text-[#00E58F] transition-colors">
-                            DLHK Kalbar Targetkan 500 Kampung Iklim Aktif Sebelum Tahun 2030
-                        </h3>
-                        <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mt-2">
-                            Dinas Lingkungan Hidup dan Kehutanan Provinsi Kalimantan Barat mengakselerasi pembentukan Komunitas Iklim di wilayah kabupaten & kota.
-                        </p>
-                    </div>
-                    <div class="pt-2 border-t border-slate-100 flex items-center text-xs font-bold text-[#00E58F]">
-                        <span>Baca Selengkapnya</span>
-                        <i class="fa-solid fa-chevron-right text-[10px] ml-1.5 group-hover:translate-x-1 transition-transform"></i>
-                    </div>
-                </div>
-            </article>
-
-            <!-- News Card 2 -->
-            <article class="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm card-hover flex flex-col group">
-                <div class="relative h-48 overflow-hidden bg-slate-100">
-                    <img src="{{ asset('frontend/img/default-slider-2.png') }}" alt="Berita Proklim" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                </div>
-                <div class="p-6 flex-grow flex flex-col justify-between space-y-4">
-                    <div>
-                        <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-2">
-                            <i class="fa-regular fa-calendar-check text-[#00E58F]"></i>
-                            <span>28 Jul 2026</span>
-                            <span class="mx-1">•</span>
-                            <span class="text-[#00E58F]">Penghargaan</span>
+                        <div class="p-6 flex-grow flex flex-col justify-between space-y-4">
+                            <div>
+                                <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-2">
+                                    <i class="fa-regular fa-calendar-check text-[#00E58F]"></i>
+                                    <span>{{ optional($news->created_at)->translatedFormat('d M Y') }}</span>
+                                    <span class="mx-1">-</span>
+                                    <span class="text-[#00E58F]">Berita</span>
+                                </div>
+                                <h3 class="text-base font-bold text-slate-900 leading-snug group-hover:text-[#00E58F] transition-colors">
+                                    {{ $news->judul }}
+                                </h3>
+                                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mt-2">
+                                    {{ \Illuminate\Support\Str::limit(strip_tags($news->deskripsi), 120) }}
+                                </p>
+                            </div>
+                            <div class="pt-2 border-t border-slate-100 flex items-center text-xs font-bold text-[#00E58F]">
+                                <span>Baca Selengkapnya</span>
+                                <i class="fa-solid fa-chevron-right text-[10px] ml-1.5 group-hover:translate-x-1 transition-transform"></i>
+                            </div>
                         </div>
-                        <h3 class="text-base font-bold text-slate-900 leading-snug group-hover:text-[#00E58F] transition-colors">
-                            DLHK Kalbar Targetkan 500 Kampung Iklim Aktif Sebelum Tahun 2030
-                        </h3>
-                        <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mt-2">
-                            Dinas Lingkungan Hidup dan Kehutanan Provinsi Kalimantan Barat memberikan apresiasi tinggi kepada 15 lokasi Proklim berprestasi.
-                        </p>
-                    </div>
-                    <div class="pt-2 border-t border-slate-100 flex items-center text-xs font-bold text-[#00E58F]">
-                        <span>Baca Selengkapnya</span>
-                        <i class="fa-solid fa-chevron-right text-[10px] ml-1.5 group-hover:translate-x-1 transition-transform"></i>
-                    </div>
-                </div>
-            </article>
-
-            <!-- News Card 3 -->
-            <article class="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm card-hover flex flex-col group">
-                <div class="relative h-48 overflow-hidden bg-slate-100">
-                    <img src="{{ asset('frontend/img/default-slider-3.png') }}" alt="Berita Proklim" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                </div>
-                <div class="p-6 flex-grow flex flex-col justify-between space-y-4">
-                    <div>
-                        <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-2">
-                            <i class="fa-regular fa-calendar-check text-[#00E58F]"></i>
-                            <span>14 Jul 2026</span>
-                            <span class="mx-1">•</span>
-                            <span class="text-[#00E58F]">Mitigasi</span>
-                        </div>
-                        <h3 class="text-base font-bold text-slate-900 leading-snug group-hover:text-[#00E58F] transition-colors">
-                            DLHK Kalbar Targetkan 500 Kampung Iklim Aktif Sebelum Tahun 2030
-                        </h3>
-                        <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mt-2">
-                            Pengolahan limbah organik menjadi biogas pengganti bahan bakar LPG di Kabupaten Kubu Raya.
-                        </p>
-                    </div>
-                    <div class="pt-2 border-t border-slate-100 flex items-center text-xs font-bold text-[#00E58F]">
-                        <span>Baca Selengkapnya</span>
-                        <i class="fa-solid fa-chevron-right text-[10px] ml-1.5 group-hover:translate-x-1 transition-transform"></i>
-                    </div>
-                </div>
-            </article>
-        </div>
+                    </a>
+                @endforeach
+            </div>
+        @else
+            <div class="bg-white border border-slate-200 rounded-2xl p-8 text-center text-sm text-slate-500">
+                Belum ada berita aktif yang diterbitkan dari CMS.
+            </div>
+        @endif
 
         <!-- Center Action Button ("Lihat Berita Lainnya >") -->
         <div class="text-center pt-8">
@@ -401,14 +327,14 @@
         <div class="text-center space-y-4 max-w-4xl mx-auto">
             <span class="text-xs font-bold uppercase tracking-widest text-[#00E58F]">AKSES DATA</span>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Ketahui Informasi Mengenai ISPU (Indeks Standar Pencemaran Udara)
+                {{ $ispuTitle }}
             </h2>
             <p class="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl mx-auto">
-                Pantau kondisi kualitas udara secara berkala di berbagai kota dan kabupaten se-Kalimantan Barat. Dapatkan informasi parameter zat pencemar udara terkini untuk mendukung aktivitas harian yang lebih sehat
+                {{ $ispuDescription }}
             </p>
             <div class="pt-2">
-                <a href="{{ route('data') }}" class="px-6 py-3 rounded-xl bg-[#00E58F] hover:bg-[#00d080] text-white font-extrabold text-xs sm:text-sm inline-flex items-center gap-2 shadow-md transition-all hover:scale-105">
-                    <span>Kunjungi Halaman</span>
+                <a href="{{ $ispuButtonLink }}" class="px-6 py-3 rounded-xl bg-[#00E58F] hover:bg-[#00d080] text-white font-extrabold text-xs sm:text-sm inline-flex items-center gap-2 shadow-md transition-all hover:scale-105">
+                    <span>{{ $ispuButtonText }}</span>
                     <i class="fa-solid fa-chevron-right text-[11px]"></i>
                 </a>
             </div>
@@ -421,15 +347,15 @@
             <div class="space-y-2 text-center lg:text-left max-w-2xl">
                 <span class="text-xs font-bold uppercase tracking-wider text-[#00E58F]">AKSES DATA TERBUKA</span>
                 <h3 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                    Ketahui Peraturan Desa & Tata Kelola Baku
+                    {{ $regulationTitle }}
                 </h3>
                 <p class="text-xs sm:text-sm text-slate-100/90 leading-relaxed">
-                    Unduh draf regulasi, surat keputusan pimpinan daerah, serta buku saku petunjuk teknis pendaftaran SRN KLHK untuk memperlancar aksi nyata kampung iklim Anda.
+                    {{ $regulationDescription }}
                 </p>
             </div>
             <div class="shrink-0">
-                <a href="{{ route('regulasi') }}" class="px-6 py-3 rounded-xl bg-white hover:bg-slate-100 text-[#004A33] font-extrabold text-xs sm:text-sm inline-flex items-center gap-2 shadow-md transition-all hover:scale-105">
-                    <span>Lihat Dokumen & Regulasi</span>
+                <a href="{{ $regulationButtonLink }}" class="px-6 py-3 rounded-xl bg-white hover:bg-slate-100 text-[#004A33] font-extrabold text-xs sm:text-sm inline-flex items-center gap-2 shadow-md transition-all hover:scale-105">
+                    <span>{{ $regulationButtonText }}</span>
                     <i class="fa-solid fa-chevron-right text-[11px] text-[#004A33]"></i>
                 </a>
             </div>
@@ -441,14 +367,14 @@
         <div class="bg-[#004A33] text-white rounded-xl p-8 sm:p-12 text-center space-y-4 max-w-4xl mx-auto shadow-xl">
             <span class="text-xs font-bold uppercase tracking-wider text-[#00E58F]">DLHK KALIMANTAN BARAT</span>
             <h3 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                Website Resmi DLHK Kalimantan Barat
+                {{ $officialTitle }}
             </h3>
             <p class="text-xs sm:text-sm text-slate-100/90 leading-relaxed max-w-2xl mx-auto">
-                Lihat informasi lengkap lainnya mengenai DLHK Kalimantan Barat melalui website resmi Dinas Lingkungan Hidup dan Kehutana Provinsi Kalimantan Barat
+                {{ $officialDescription }}
             </p>
             <div class="pt-2">
-                <a href="https://dlhk.kalbarprov.go.id" target="_blank" class="px-6 py-3 rounded-xl bg-white hover:bg-slate-100 text-[#004A33] font-extrabold text-xs sm:text-sm inline-flex items-center gap-2 shadow-md transition-all hover:scale-105">
-                    <span>Buka Website</span>
+                <a href="{{ $officialButtonLink }}" target="_blank" class="px-6 py-3 rounded-xl bg-white hover:bg-slate-100 text-[#004A33] font-extrabold text-xs sm:text-sm inline-flex items-center gap-2 shadow-md transition-all hover:scale-105">
+                    <span>{{ $officialButtonText }}</span>
                     <i class="fa-solid fa-chevron-right text-[11px] text-[#004A33]"></i>
                 </a>
             </div>
@@ -459,17 +385,17 @@
     <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div class="space-y-1 text-center sm:text-left">
-                <h3 class="text-2xl sm:text-3xl font-extrabold text-[#033B26] tracking-tight">Kunjungi Website</h3>
+                <h3 class="text-2xl sm:text-3xl font-extrabold text-[#033B26] tracking-tight">{{ $visitorTitle }}</h3>
                 <p class="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
-                    Total akumulasi aktivitas kunjungan per-bulan dari<br class="hidden sm:inline" /> seluruh pengguna
+                    {{ $visitorDescription }}
                 </p>
             </div>
             <div class="bg-[#033B26] text-white px-7 py-5 rounded-xl flex items-center justify-between gap-8 sm:gap-12 shadow-md shrink-0">
                 <div class="text-left space-y-0.5">
                     <span class="text-[11px] font-bold text-white uppercase block tracking-wider">TOTAL KUNJUNGAN WEBSITE</span>
-                    <span class="text-xs text-white/95 font-medium block">Februari 2026</span>
+                    <span class="text-xs text-white/95 font-medium block">{{ $visitorSubtitle }}</span>
                 </div>
-                <span class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">413.939</span>
+                <span class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">{{ $visitorCount }}</span>
             </div>
         </div>
     </section>

@@ -65,6 +65,7 @@ class SectionLandingPageController extends Controller
             $sectionLandingPage = new MdSectionLandingPage;
             $sectionLandingPage->user_id = Auth::user()->id;
             $sectionLandingPage->nama = $request->nama;
+            $sectionLandingPage->status_aktif = '1';
             $sectionLandingPage->save();
 
             return response()->json(['success' => 'Berhasil menambahkan section landing page']);

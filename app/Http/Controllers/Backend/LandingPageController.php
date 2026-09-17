@@ -120,6 +120,7 @@ class LandingPageController extends Controller
             $landingPageSection->section_id = $sectionId;
             $landingPageSection->sort_order = $request->sort_order;
             $landingPageSection->content =  $content;
+            $landingPageSection->status_aktif = '1';
             $landingPageSection->save();
 
             Alert::success('Berhasil', 'Landing Page berhasil disimpan');

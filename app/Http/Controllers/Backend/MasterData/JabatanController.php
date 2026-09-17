@@ -71,6 +71,7 @@ class JabatanController extends Controller
         try {
             $jabatan = new MasterJabatan;
             $jabatan->nama = $request->nama;
+            $jabatan->status_aktif = '1';
             $jabatan->save();
 
             return response()->json(['success' => 'Berhasil menambahkan jabatan']);

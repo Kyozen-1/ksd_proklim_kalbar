@@ -103,6 +103,7 @@ class AnggotaPelaksanaController extends Controller
             $anggotaPelaksana = new AnggotaPelaksana;
             $anggotaPelaksana->jabatan_id = Crypt::decryptString($request->jabatan_id);
             $anggotaPelaksana->nama = $request->nama;
+            $anggotaPelaksana->status_aktif = '1';
             $anggotaPelaksana->save();
 
             if (!in_array(
