@@ -61,6 +61,7 @@ class BeritaController extends Controller
             $berita->user_id = Auth::user()->id;
             $berita->judul = $request->judul;
             $berita->deskripsi = Purifier::clean($request->deskripsi,'news');
+            $berita->status_aktif = '1';
             $berita->save();
 
             if ($request->hasFile('gambar')) {
@@ -78,6 +79,7 @@ class BeritaController extends Controller
                     $pivot->berita_id = $berita->id;
                     $pivot->nama = basename($file);
                     $pivot->image_path = $path;
+                    $pivot->status_aktif = '1';
                     $pivot->save();
                 }
             }

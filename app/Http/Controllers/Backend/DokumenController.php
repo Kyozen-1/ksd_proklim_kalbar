@@ -76,7 +76,8 @@ class DokumenController extends Controller
     {
         $errors = Validator::make($request->all(), [
             'nama' => 'required',
-            'kategori' => 'required'
+            'kategori' => 'required',
+            'document' => 'required|mimes:pdf',
         ]);
 
         if($errors -> fails())
@@ -84,23 +85,12 @@ class DokumenController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
 
-        if($request->document)
-        {
-            $errors = Validator::make($request->all(), [
-                'document' => 'required|mimes:pdf',
-            ]);
-
-            if($errors -> fails())
-            {
-                return response()->json(['errors' => $errors->errors()->all()]);
-            }
-        }
-
         try {
             $dokumen = new Dokumen;
             $dokumen->user_id = Auth::user()->id;
             $dokumen->nama = $request->nama;
             $dokumen->kategori = $request->kategori;
+            $dokumen->status_aktif = '1';
             $dokumen->save();
 
             $destinationPath = 'dokumen';

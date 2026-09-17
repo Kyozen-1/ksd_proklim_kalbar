@@ -76,6 +76,7 @@ class FaqController extends Controller
             $faq->user_id = Auth::user()->id;
             $faq->pertanyaan = $request->pertanyaan;
             $faq->jawaban = $request->jawaban;
+            $faq->status_aktif = '1';
             $faq->save();
 
             return response()->json(['success' => 'Berhasil menambahkan faq']);

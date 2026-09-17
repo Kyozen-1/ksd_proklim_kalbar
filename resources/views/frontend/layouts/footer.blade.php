@@ -22,12 +22,12 @@
             <div class="md:col-span-3 space-y-3">
                 <h4 class="text-xs sm:text-sm font-bold text-slate-900 tracking-wide">Akses Cepat</h4>
                 <ul class="space-y-2 text-xs text-slate-600 font-medium">
-                    <li><a href="{{ route('about') }}" class="hover:text-[#00E58F] transition-colors">Edukasi</a></li>
-                    <li><a href="{{ route('data') }}" class="hover:text-[#00E58F] transition-colors">PROKLIM</a></li>
-                    <li><a href="{{ route('data') }}" class="hover:text-[#00E58F] transition-colors">IGRK</a></li>
-                    <li><a href="{{ route('pslb3pp') }}" class="hover:text-[#00E58F] transition-colors">Sampah</a></li>
-                    <li><a href="{{ route('about') }}" class="hover:text-[#00E58F] transition-colors">Kualitas Lingkungan</a></li>
-                    <li><a href="{{ route('pslb3pp') }}" class="hover:text-[#00E58F] transition-colors">LB3</a></li>
+                    <li><a href="{{ route('edukasi') }}" class="hover:text-[#00E58F] transition-colors">Edukasi</a></li>
+                    <li><a href="{{ route('feature-development', ['feature' => 'proklim']) }}" class="hover:text-[#00E58F] transition-colors">PROKLIM</a></li>
+                    <li><a href="{{ route('feature-development', ['feature' => 'igrk']) }}" class="hover:text-[#00E58F] transition-colors">IGRK</a></li>
+                    <li><a href="{{ route('feature-development', ['feature' => 'sampah']) }}" class="hover:text-[#00E58F] transition-colors">Sampah</a></li>
+                    <li><a href="{{ route('feature-development', ['feature' => 'kualitas-lingkungan']) }}" class="hover:text-[#00E58F] transition-colors">Kualitas Lingkungan</a></li>
+                    <li><a href="{{ route('feature-development', ['feature' => 'lb3']) }}" class="hover:text-[#00E58F] transition-colors">LB3</a></li>
                     <li><a href="{{ route('regulasi') }}" class="hover:text-[#00E58F] transition-colors">Dokumen Resmi</a></li>
                     <li><a href="{{ route('berita') }}" class="hover:text-[#00E58F] transition-colors">Berita</a></li>
                     <li><a href="{{ route('galeri') }}" class="hover:text-[#00E58F] transition-colors">Galeri</a></li>

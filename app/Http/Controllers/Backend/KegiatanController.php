@@ -119,6 +119,7 @@ class KegiatanController extends Controller
             $kegiatan->tanggal = $request->tanggal;
             $kegiatan->tempat = $request->tempat;
             $kegiatan->alamat = $request->alamat;
+            $kegiatan->status_aktif = '1';
             $kegiatan->save();
 
             if ($request->hasFile('gambar')) {
@@ -136,6 +137,7 @@ class KegiatanController extends Controller
                     $pivot->kegiatan_id = $kegiatan->id;
                     $pivot->nama = basename($file);
                     $pivot->image_path = $path;
+                    $pivot->status_aktif = '1';
                     $pivot->save();
                 }
             }
@@ -145,6 +147,7 @@ class KegiatanController extends Controller
                 $anggota = new PivotAnggotaKegiatan;
                 $anggota->kegiatan_id = $kegiatan->id;
                 $anggota->anggota_pelaksana_id = Crypt::decryptString($anggotaKegiatan[$i]);
+                $anggota->status_aktif = '1';
                 $anggota->save();
             }
 
@@ -255,7 +258,7 @@ class KegiatanController extends Controller
             $kegiatan->kabupaten_kota_id = Crypt::decryptString($request->kabupaten_kota_id);
             $kegiatan->judul = $request->judul;
             $kegiatan->deskripsi = Purifier::clean($request->deskripsi,'news');
-            $kegiatan->link_yt = $this->parseLinkYt($request->link_yt);
+            $kegiatan->link_yt = $request->link_yt ? $this->parseLinkYt($request->link_yt) : null;
             $kegiatan->tanggal = $request->tanggal;
             $kegiatan->tempat = $request->tempat;
             $kegiatan->alamat = $request->alamat;
@@ -305,6 +308,7 @@ class KegiatanController extends Controller
                 $pivot->kegiatan_id = $kegiatan->id;
                 $pivot->nama = basename($image);
                 $pivot->image_path = $image;
+                $pivot->status_aktif = '1';
                 $pivot->save();
             }
 
@@ -323,6 +327,7 @@ class KegiatanController extends Controller
                 $anggota = new PivotAnggotaKegiatan;
                 $anggota->kegiatan_id = $kegiatan->id;
                 $anggota->anggota_pelaksana_id = Crypt::decryptString($anggotaKegiatan[$i]);
+                $anggota->status_aktif = '1';
                 $anggota->save();
             }
 
