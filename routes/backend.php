@@ -9,6 +9,12 @@ use App\Http\Controllers\Backend\AnggotaPelaksanaController;
 use App\Http\Controllers\Backend\LandingPageController;
 use App\Http\Controllers\Backend\MasterData\JabatanController;
 use App\Http\Controllers\Backend\MasterData\SectionLandingPageController;
+use App\Http\Controllers\Backend\MasterData\KategoriProklimController;
+use App\Http\Controllers\Backend\MasterData\SektorUtamaEmisiController;
+use App\Http\Controllers\Backend\MasterData\JenisEmisiController;
+use App\Http\Controllers\Backend\MasterData\KategoriSampahController;
+use App\Http\Controllers\Backend\MasterData\KategoriKualitasLingkunganController;
+use App\Http\Controllers\Backend\MasterData\SektorLb3Controller;
 use App\Http\Controllers\Backend\Pengaturan\ApiClientController;
 use App\Http\Controllers\Backend\Pengaturan\ApiPermissionController;
 
@@ -104,6 +110,66 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
                 Route::get('/edit/{id}',[SectionLandingPageController::class, 'edit'])->name('cms.master-data.section-landing-page.edit');
                 Route::post('/update',[SectionLandingPageController::class, 'update'])->name('cms.master-data.section-landing-page.update');
                 Route::get('/destroy/{id}',[SectionLandingPageController::class, 'destroy'])->name('cms.master-data.section-landing-page.destroy');
+            });
+
+            Route::prefix('kategori-proklim')->group(function(){
+                Route::get('/', [KategoriProklimController::class, 'index'])->name('cms.master-data.kategori-proklim.index');
+                Route::get('/datatable', [KategoriProklimController::class, 'datatable'])->name('cms.master-data.kategori-proklim.datatable');
+                Route::get('/detail/{id}', [KategoriProklimController::class, 'show'])->name('cms.master-data.kategori-proklim.show');
+                Route::post('/',[KategoriProklimController::class, 'store'])->name('cms.master-data.kategori-proklim.store');
+                Route::get('/edit/{id}',[KategoriProklimController::class, 'edit'])->name('cms.master-data.kategori-proklim.edit');
+                Route::post('/update',[KategoriProklimController::class, 'update'])->name('cms.master-data.kategori-proklim.update');
+                Route::get('/destroy/{id}',[KategoriProklimController::class, 'destroy'])->name('cms.master-data.kategori-proklim.destroy');
+            });
+
+            Route::prefix('sektor-utama-emisi')->group(function(){
+                Route::get('/', [SektorUtamaEmisiController::class, 'index'])->name('cms.master-data.sektor-utama-emisi.index');
+                Route::get('/datatable', [SektorUtamaEmisiController::class, 'datatable'])->name('cms.master-data.sektor-utama-emisi.datatable');
+                Route::get('/detail/{id}', [SektorUtamaEmisiController::class, 'show'])->name('cms.master-data.sektor-utama-emisi.show');
+                Route::post('/',[SektorUtamaEmisiController::class, 'store'])->name('cms.master-data.sektor-utama-emisi.store');
+                Route::get('/edit/{id}',[SektorUtamaEmisiController::class, 'edit'])->name('cms.master-data.sektor-utama-emisi.edit');
+                Route::post('/update',[SektorUtamaEmisiController::class, 'update'])->name('cms.master-data.sektor-utama-emisi.update');
+                Route::get('/destroy/{id}',[SektorUtamaEmisiController::class, 'destroy'])->name('cms.master-data.sektor-utama-emisi.destroy');
+            });
+
+            Route::prefix('jenis-emisi')->group(function(){
+                Route::get('/', [JenisEmisiController::class, 'index'])->name('cms.master-data.jenis-emisi.index');
+                Route::get('/datatable', [JenisEmisiController::class, 'datatable'])->name('cms.master-data.jenis-emisi.datatable');
+                Route::get('/detail/{id}', [JenisEmisiController::class, 'show'])->name('cms.master-data.jenis-emisi.show');
+                Route::post('/',[JenisEmisiController::class, 'store'])->name('cms.master-data.jenis-emisi.store');
+                Route::get('/edit/{id}',[JenisEmisiController::class, 'edit'])->name('cms.master-data.jenis-emisi.edit');
+                Route::post('/update',[JenisEmisiController::class, 'update'])->name('cms.master-data.jenis-emisi.update');
+                Route::get('/destroy/{id}',[JenisEmisiController::class, 'destroy'])->name('cms.master-data.jenis-emisi.destroy');
+            });
+
+            Route::prefix('kategori-sampah')->group(function(){
+                Route::get('/', [KategoriSampahController::class, 'index'])->name('cms.master-data.kategori-sampah.index');
+                Route::get('/datatable', [KategoriSampahController::class, 'datatable'])->name('cms.master-data.kategori-sampah.datatable');
+                Route::get('/detail/{id}', [KategoriSampahController::class, 'show'])->name('cms.master-data.kategori-sampah.show');
+                Route::post('/',[KategoriSampahController::class, 'store'])->name('cms.master-data.kategori-sampah.store');
+                Route::get('/edit/{id}',[KategoriSampahController::class, 'edit'])->name('cms.master-data.kategori-sampah.edit');
+                Route::post('/update',[KategoriSampahController::class, 'update'])->name('cms.master-data.kategori-sampah.update');
+                Route::get('/destroy/{id}',[KategoriSampahController::class, 'destroy'])->name('cms.master-data.kategori-sampah.destroy');
+            });
+
+            Route::prefix('kategori-kualitas-lingkungan')->group(function(){
+                Route::get('/', [KategoriKualitasLingkunganController::class, 'index'])->name('cms.master-data.kategori-kualitas-lingkungan.index');
+                Route::get('/datatable', [KategoriKualitasLingkunganController::class, 'datatable'])->name('cms.master-data.kategori-kualitas-lingkungan.datatable');
+                Route::get('/detail/{id}', [KategoriKualitasLingkunganController::class, 'show'])->name('cms.master-data.kategori-kualitas-lingkungan.show');
+                Route::post('/',[KategoriKualitasLingkunganController::class, 'store'])->name('cms.master-data.kategori-kualitas-lingkungan.store');
+                Route::get('/edit/{id}',[KategoriKualitasLingkunganController::class, 'edit'])->name('cms.master-data.kategori-kualitas-lingkungan.edit');
+                Route::post('/update',[KategoriKualitasLingkunganController::class, 'update'])->name('cms.master-data.kategori-kualitas-lingkungan.update');
+                Route::get('/destroy/{id}',[KategoriKualitasLingkunganController::class, 'destroy'])->name('cms.master-data.kategori-kualitas-lingkungan.destroy');
+            });
+
+            Route::prefix('sektor-lb3')->group(function(){
+                Route::get('/', [SektorLb3Controller::class, 'index'])->name('cms.master-data.sektor-lb3.index');
+                Route::get('/datatable', [SektorLb3Controller::class, 'datatable'])->name('cms.master-data.sektor-lb3.datatable');
+                Route::get('/detail/{id}', [SektorLb3Controller::class, 'show'])->name('cms.master-data.sektor-lb3.show');
+                Route::post('/',[SektorLb3Controller::class, 'store'])->name('cms.master-data.sektor-lb3.store');
+                Route::get('/edit/{id}',[SektorLb3Controller::class, 'edit'])->name('cms.master-data.sektor-lb3.edit');
+                Route::post('/update',[SektorLb3Controller::class, 'update'])->name('cms.master-data.sektor-lb3.update');
+                Route::get('/destroy/{id}',[SektorLb3Controller::class, 'destroy'])->name('cms.master-data.sektor-lb3.destroy');
             });
         });
 
