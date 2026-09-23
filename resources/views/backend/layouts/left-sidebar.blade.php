@@ -57,7 +57,20 @@
                             <span> Master Data </span>
                             <span class="menu-arrow"></span>
                         </a>
-                        <ul class="nav-second-level" aria-expanded="false">
+                        <ul class="nav-second-level nav" aria-expanded="false">
+                            <li><a href="{{ route('cms.master-data.kategori-proklim.index') }}">Kategori Proklim</a></li>
+                            <li>
+                                <a href="javascript: void(0);" aria-expanded="false">Emisi
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <ul class="nav-third-level nav" aria-expanded="false">
+                                    <li><a href="{{ route('cms.master-data.sektor-utama-emisi.index') }}">Sektor Utama Emisi</a></li>
+                                    <li><a href="{{ route('cms.master-data.jenis-emisi.index') }}">Jenis Emisi</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="{{ route('cms.master-data.kategori-sampah.index') }}">Kategori Sampah</a></li>
+                            <li><a href="{{ route('cms.master-data.kategori-kualitas-lingkungan.index') }}">Kategori Kualitas Lingkungan</a></li>
+                            <li><a href="{{ route('cms.master-data.sektor-lb3.index') }}">Sektor Lb3</a></li>
                             <li><a href="{{ route('cms.master-data.jabatan.index') }}">Jabatan</a></li>
                             <li><a href="{{ route('cms.master-data.section-landing-page.index') }}">Section Landing Page</a></li>
                         </ul>
