@@ -8,6 +8,7 @@ use App\Http\Controllers\Backend\DokumenController;
 use App\Http\Controllers\Backend\AnggotaPelaksanaController;
 use App\Http\Controllers\Backend\LandingPageController;
 use App\Http\Controllers\Backend\TimbulanLb3Controller;
+use App\Http\Controllers\Backend\KualitasLingkunganController;
 use App\Http\Controllers\Backend\MasterData\JabatanController;
 use App\Http\Controllers\Backend\MasterData\SectionLandingPageController;
 use App\Http\Controllers\Backend\MasterData\KategoriProklimController;
@@ -85,6 +86,14 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::post('/', [TimbulanLb3Controller::class, 'store'])->name('cms.timbulan-lb3.store');
             Route::get('/datatable', [TimbulanLb3Controller::class, 'datatable'])->name('cms.timbulan-lb3.datatable');
             Route::post('/update', [TimbulanLb3Controller::class, 'update'])->name('cms.timbulan-lb3.update');
+        });
+
+        Route::prefix('kualitas-lingkungan')->group(function(){
+            Route::get('/', [KualitasLingkunganController::class, 'index'])->name('cms.kualitas-lingkungan.index');
+            Route::get('/datatable', [KualitasLingkunganController::class, 'datatable'])->name('cms.kualitas-lingkungan.datatable');
+            Route::post('/', [KualitasLingkunganController::class, 'store'])->name('cms.kualitas-lingkungan.store');
+            Route::get('/datatable', [KualitasLingkunganController::class, 'datatable'])->name('cms.kualitas-lingkungan.datatable');
+            Route::post('/update', [KualitasLingkunganController::class, 'update'])->name('cms.kualitas-lingkungan.update');
         });
     });
 
