@@ -13,6 +13,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('cms.timbulan-lb3.index') }}">
+                            <i class="mdi mdi-delete-alert"></i>
+                            <span> Timbulan LB3 </span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('cms.berita.index') }}">
                             <i class="mdi mdi-newspaper"></i>
                             <span> Berita </span>

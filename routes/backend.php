@@ -7,6 +7,7 @@ use App\Http\Controllers\Backend\FaqController;
 use App\Http\Controllers\Backend\DokumenController;
 use App\Http\Controllers\Backend\AnggotaPelaksanaController;
 use App\Http\Controllers\Backend\LandingPageController;
+use App\Http\Controllers\Backend\TimbulanLb3Controller;
 use App\Http\Controllers\Backend\MasterData\JabatanController;
 use App\Http\Controllers\Backend\MasterData\SectionLandingPageController;
 use App\Http\Controllers\Backend\MasterData\KategoriProklimController;
@@ -76,6 +77,14 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::post('/update/{id}',[KegiatanController::class, 'update'])->name('cms.kegiatan.update');
             Route::get('/destroy/{id}',[KegiatanController::class, 'destroy'])->name('cms.kegiatan.destroy');
             Route::get('/gambar/{id}', [KegiatanController::class, 'gambar'])->name('cms.kegiatan.gambar');
+        });
+
+        Route::prefix('timbulan-lb3')->group(function(){
+            Route::get('/', [TimbulanLb3Controller::class, 'index'])->name('cms.timbulan-lb3.index');
+            Route::get('/datatable', [TimbulanLb3Controller::class, 'datatable'])->name('cms.timbulan-lb3.datatable');
+            Route::post('/', [TimbulanLb3Controller::class, 'store'])->name('cms.timbulan-lb3.store');
+            Route::get('/datatable', [TimbulanLb3Controller::class, 'datatable'])->name('cms.timbulan-lb3.datatable');
+            Route::post('/update', [TimbulanLb3Controller::class, 'update'])->name('cms.timbulan-lb3.update');
         });
     });
 
