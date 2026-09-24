@@ -13,6 +13,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('cms.kualitas-lingkungan.index') }}">
+                            <i class="mdi mdi-leaf"></i>
+                            <span> Kualitas Lingkungan </span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('cms.timbulan-lb3.index') }}">
                             <i class="mdi mdi-delete-alert"></i>
                             <span> Timbulan LB3 </span>
