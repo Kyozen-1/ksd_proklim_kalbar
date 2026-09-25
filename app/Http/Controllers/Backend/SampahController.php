@@ -11,17 +11,17 @@ use Validator;
 use DB;
 use DataTables;
 use App\Models\Regency;
-use App\Models\MdSektorLb3;
-use App\Models\DataTimbulanLb3;
+use App\Models\MdKategoriSampah;
+use App\Models\DataSampah;
 
-class TimbulanLb3Controller extends Controller
+class SampahController extends Controller
 {
     public function index()
     {
-        return view('backend.timbulan-lb3.index', [
+        return view('backend.sampah.index', [
             'kabupatenKotas' => $this->getKabupatenKota(),
-            'sektorLb3s' => $this->getSektorLb3(),
-            'countDataTimbulanLb3' => $this->countDataTimbulanLb3()
+            'kategoriSampahs' => $this->getKategoriSampah(),
+            'countDataSampah' => $this->countDataSampah()
         ]);
     }
 
@@ -37,9 +37,9 @@ class TimbulanLb3Controller extends Controller
         return $getData;
     }
 
-    public function getSektorLb3()
+    public function getKategoriSampah()
     {
-        $getData = MdSektorLb3::get()
+        $getData = MdKategoriSampah::get()
                     ->map(function($d){
                         return [
                             'id' => Crypt::encryptString($d->id),
@@ -49,19 +49,19 @@ class TimbulanLb3Controller extends Controller
         return $getData;
     }
 
-    public function countDataTimbulanLb3()
+    public function countDataSampah()
     {
-        return DataTimbulanLb3::count();
+        return DataSampah::count();
     }
 
     public function datatable(Request $request)
     {
-        $getDatas = DataTimbulanLb3::when($request->kabupaten_kota_id != null, function($q) use ($request){
+        $getDatas = DataSampah::when($request->kabupaten_kota_id != null, function($q) use ($request){
                     $kabupatenKotaId = Crypt::decryptString($request->kabupaten_kota_id);
                     $q->where('kabupaten_kota_id', $kabupatenKotaId);
-                })->when($request->sektor_lb3_id != null, function($q) use ($request){
-                    $sektorLb3Id = Crypt::decryptString($request->sektor_lb3_id);
-                    $q->where('sektor_lb3_id', $sektorLb3Id);
+                })->when($request->kategori_sampah_id != null, function($q) use ($request){
+                    $kategoriSampahId = Crypt::decryptString($request->kategori_sampah_id);
+                    $q->where('kategori_sampah_id', $kategoriSampahId);
                 })->when($request->tahun != null, function($q) use ($request){
                     $q->where('tahun', $request->tahun);
                 })->get();
@@ -70,9 +70,10 @@ class TimbulanLb3Controller extends Controller
             $data[] = [
                 'id' => Crypt::encryptString($getData->id),
                 'kabupaten_kota_id' => $getData->kabupaten_kota->name,
-                'sektor_lb3_id' => $getData->sektor_lb3->nama,
+                'kategori_sampah_id' => $getData->kategori_sampah->nama,
                 'tahun' => $getData->tahun,
-                'nilai' => number_format($getData->nilai, 2, ',', '.'),
+                'nilai' => $getData->nilai,
+                'sampah_terkelola' => $getData->sampah_terkelola,
                 'tanggal_pendataan' => Carbon::parse($getData->tanggal_pendataan)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('j F Y')
             ];
         }
@@ -85,6 +86,16 @@ class TimbulanLb3Controller extends Controller
                 $button_edit = '<button type="button" name="edit" id="'.$id.'" class="edit btn btn-icon waves-effect btn-warning" title="Edit Data"><i class="fas fa-edit"></i></button>';
                 return $button_edit;
             })
+            ->editColumn('nilai', function($data){
+                return number_format($data['nilai'], 2, ',', '.');
+            })
+            ->editColumn('sampah_terkelola', function($data){
+                return number_format($data['sampah_terkelola'], 2, ',', '.');
+            })
+            ->addColumn('sampah_tidak_terkelola', function($data){
+                $sampahTidakTerkelola = $data['nilai'] - $data['sampah_terkelola'];
+                return number_format($sampahTidakTerkelola, 2, ',', '.');
+            })
             ->rawColumns(['aksi'])
         ->make(true);
     }
@@ -96,7 +107,7 @@ class TimbulanLb3Controller extends Controller
                 'required',
                 'string',
             ],
-            'sektor_lb3_id' => [
+            'kategori_sampah_id' => [
                 'required',
                 'string',
             ],
@@ -123,6 +134,16 @@ class TimbulanLb3Controller extends Controller
                 'numeric',
                 'min:0',
             ],
+            'sampah_terkelola' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+            'sampah_terkelola.*' => [
+                'required',
+                'numeric',
+                'min:0',
+            ],
             'tanggal_pendataan' => [
                 'required',
                 'array',
@@ -142,17 +163,19 @@ class TimbulanLb3Controller extends Controller
 
         $jumlahTahun = count($request->tahun);
         $jumlahNilai = count($request->nilai);
+        $jumlahSampahTerkelola = count($request->sampah_terkelola);
         $jumlahTanggal = count(
             $request->tanggal_pendataan
         );
 
         if (
             $jumlahTahun !== $jumlahNilai ||
-            $jumlahTahun !== $jumlahTanggal
+            $jumlahTahun !== $jumlahTanggal ||
+            $jumlahTahun !== $jumlahSampahTerkelola
         ) {
             return response()->json([
                 'errors' => [
-                    'Jumlah data tahun, nilai timbulan, dan tanggal pendataan tidak sama.'
+                    'Jumlah data tahun, nilai, sampah terkelola, dan tanggal pendataan tidak sama.'
                 ]
             ]);
         }
@@ -170,13 +193,13 @@ class TimbulanLb3Controller extends Controller
         }
 
         try {
-            $sektorLb3Id = Crypt::decryptString(
-                $request->sektor_lb3_id
+            $kategoriSampahId = Crypt::decryptString(
+                $request->kategori_sampah_id
             );
         } catch (DecryptException $e) {
             return response()->json([
                 'errors' => [
-                    'Sektor LB3 tidak valid.'
+                    'Kategori sampah tidak valid.'
                 ]
             ]);
         }
@@ -185,25 +208,26 @@ class TimbulanLb3Controller extends Controller
             DB::beginTransaction();
 
             foreach ($request->tahun as $index => $tahun) {
-                $timbulanLb3 = DataTimbulanLb3::where('kabupaten_kota_id',$kabupatenKotaId)
-                                ->where('sektor_lb3_id',$sektorLb3Id)
+                $sampah = DataSampah::where('kabupaten_kota_id',$kabupatenKotaId)
+                                ->where('kategori_sampah_id',$kategoriSampahId)
                                 ->where('tahun',$tahun)
                                 ->first();
 
-                if (!$timbulanLb3) {
-                    $timbulanLb3 = new DataTimbulanLb3;
-                    $timbulanLb3->kabupaten_kota_id =$kabupatenKotaId;
-                    $timbulanLb3->sektor_lb3_id =$sektorLb3Id;
-                    $timbulanLb3->tahun = $tahun;
+                if (!$sampah) {
+                    $sampah = new DataSampah;
+                    $sampah->kabupaten_kota_id =$kabupatenKotaId;
+                    $sampah->kategori_sampah_id =$kategoriSampahId;
+                    $sampah->tahun = $tahun;
                 }
 
-                $timbulanLb3->nilai = $request->nilai[$index];
-                $timbulanLb3->tanggal_pendataan = $request->tanggal_pendataan[$index];
-                $timbulanLb3->save();
+                $sampah->nilai = $request->nilai[$index];
+                $sampah->sampah_terkelola = $request->sampah_terkelola[$index];
+                $sampah->tanggal_pendataan = $request->tanggal_pendataan[$index];
+                $sampah->save();
             }
             DB::commit();
             return response()->json([
-                'success' => 'Berhasil menyimpan data timbulan LB3.'
+                'success' => 'Berhasil menyimpan data sampah.'
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -227,6 +251,11 @@ class TimbulanLb3Controller extends Controller
                 'numeric',
                 'min:0'
             ],
+            'sampah_terkelola' => [
+                'required',
+                'numeric',
+                'min:0'
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -244,17 +273,18 @@ class TimbulanLb3Controller extends Controller
         }
 
         try {
-            $timbulanLb3 = DataTimbulanLb3::find($id);
-            if (!$timbulanLb3) {
+            $sampah = DataSampah::find($id);
+            if (!$sampah) {
                 return response()->json([
-                    'errors' => 'Data timbulan LB3 tidak ditemukan.'
+                    'errors' => 'Data sampah tidak ditemukan.'
                 ]);
             }
-            $timbulanLb3->nilai = $request->nilai;
-            $timbulanLb3->save();
+            $sampah->nilai = $request->nilai;
+            $sampah->sampah_terkelola = $request->sampah_terkelola;
+            $sampah->save();
 
             return response()->json([
-                'success' => 'Berhasil mengubah nilai timbulan LB3.'
+                'success' => 'Berhasil mengubah nilai sampah.'
             ]);
         } catch (\Throwable $th) {
 
