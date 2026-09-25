@@ -50,7 +50,8 @@ class JenisEmisiController extends Controller
                 'id' => Crypt::encryptString($d->id),
                 'nama' => $d->nama,
                 'sektor_utama_emisi' => $d->sektor_utama_emisi->nama,
-                'jenis_perhitungan' => $d->jenis_perhitungan
+                'jenis_perhitungan' => $d->jenis_perhitungan,
+                'satuan' => $d->satuan,
             ];
         }
 
@@ -87,6 +88,7 @@ class JenisEmisiController extends Controller
             'nama' => 'required',
             'sektor_utama_emisi_id' => 'required',
             'jenis_perhitungan' => 'required',
+            'satuan' => 'required',
         ]);
 
         if($errors -> fails())
@@ -99,6 +101,7 @@ class JenisEmisiController extends Controller
             $jenisEmisi->sektor_utama_emisi_id = Crypt::decryptString($request->sektor_utama_emisi_id);
             $jenisEmisi->nama = $request->nama;
             $jenisEmisi->jenis_perhitungan = $request->jenis_perhitungan;
+            $jenisEmisi->satuan = $request->satuan;
             $jenisEmisi->status_aktif = '1';
             $jenisEmisi->save();
 
@@ -118,7 +121,8 @@ class JenisEmisiController extends Controller
         $data = [
             'sektor_utama_emisi' => $getData->sektor_utama_emisi->nama,
             'nama' => $getData->nama,
-            'jenis_perhitungan' => $getData->jenis_perhitungan
+            'jenis_perhitungan' => $getData->jenis_perhitungan,
+            'satuan' => $getData->satuan,
         ];
 
         return response()->json(['result' => $data]);
@@ -134,7 +138,8 @@ class JenisEmisiController extends Controller
         $data = [
             'sektor_utama_emisi' => $getData->sektor_utama_emisi->nama,
             'nama' => $getData->nama,
-            'jenis_perhitungan' => $getData->jenis_perhitungan
+            'jenis_perhitungan' => $getData->jenis_perhitungan,
+            'satuan' => $getData->satuan,
         ];
 
         return response()->json(['result' => $data]);
@@ -149,6 +154,7 @@ class JenisEmisiController extends Controller
             'nama' => 'required',
             'sektor_utama_emisi_id' => 'required',
             'jenis_perhitungan' => 'required',
+            'satuan' => 'required',
         ]);
 
         if($errors -> fails())
@@ -163,6 +169,7 @@ class JenisEmisiController extends Controller
             $jenisEmisi->sektor_utama_emisi_id = Crypt::decryptString($request->sektor_utama_emisi_id);
             $jenisEmisi->nama = $request->nama;
             $jenisEmisi->jenis_perhitungan = $request->jenis_perhitungan;
+            $jenisEmisi->satuan = $request->satuan;
             $jenisEmisi->save();
 
             return response()->json(['success' => 'Berhasil merubah data']);

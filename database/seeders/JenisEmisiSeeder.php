@@ -20,11 +20,13 @@ class JenisEmisiSeeder extends Seeder
                 'jenis_emisi' => [
                     [
                         'nama' => 'Total Emisi',
-                        'jenis_perhitungan' => 'tambah'
+                        'jenis_perhitungan' => 'tambah',
+                        'satuan' => 'tco2e'
                     ],
                     [
                         'nama' => 'Faktor Serapan',
-                        'jenis_perhitungan' => 'kurang'
+                        'jenis_perhitungan' => 'kurang',
+                        'satuan' => 'tco2e'
                     ]
                 ]
             ],
@@ -33,11 +35,13 @@ class JenisEmisiSeeder extends Seeder
                 'jenis_emisi' => [
                     [
                         'nama' => 'Emisi Bahan Bakar',
-                        'jenis_perhitungan' => 'tambah'
+                        'jenis_perhitungan' => 'tambah',
+                        'satuan' => 'kl'
                     ],
                     [
                         'nama' => 'Listrik',
-                        'jenis_perhitungan' => 'tambah'
+                        'jenis_perhitungan' => 'tambah',
+                        'satuan' => 'gwh'
                     ]
                 ]
             ],
@@ -46,11 +50,13 @@ class JenisEmisiSeeder extends Seeder
                 'jenis_emisi' => [
                     [
                         'nama' => 'Emisi Sampah',
-                        'jenis_perhitungan' => 'tambah'
+                        'jenis_perhitungan' => 'tambah',
+                        'satuan' => 'tco2e'
                     ],
                     [
                         'nama' => 'Emisi Air Limbah',
-                        'jenis_perhitungan' => 'tambah'
+                        'jenis_perhitungan' => 'tambah',
+                        'satuan' => 'tco2e'
                     ]
                 ]
             ],
@@ -59,11 +65,13 @@ class JenisEmisiSeeder extends Seeder
                 'jenis_emisi' => [
                     [
                         'nama' => 'Emisi Peternakan',
-                        'jenis_perhitungan' => 'tambah'
+                        'jenis_perhitungan' => 'tambah',
+                        'satuan' => 'tco2e'
                     ],
                     [
                         'nama' => 'Pupuk Kimia & Sawah',
-                        'jenis_perhitungan' => 'tambah'
+                        'jenis_perhitungan' => 'tambah',
+                        'satuan' => 'tco2e'
                     ]
                 ]
             ],
@@ -72,7 +80,8 @@ class JenisEmisiSeeder extends Seeder
                 'jenis_emisi' => [
                     [
                         'nama' => 'Emisi IPPU',
-                        'jenis_perhitungan' => 'tambah'
+                        'jenis_perhitungan' => 'tambah',
+                        'satuan' => 'tco2e'
                     ]
                 ]
             ],
@@ -87,6 +96,7 @@ class JenisEmisiSeeder extends Seeder
                     $mdJenisEmisi->sektor_utama_emisi_id = $getMdSektorUtamaEmisi->id;
                     $mdJenisEmisi->nama = $jenis_emisi['nama'];
                     $mdJenisEmisi->jenis_perhitungan = $jenis_emisi['jenis_perhitungan'];
+                    $mdJenisEmisi->satuan = $jenis_emisi['satuan'];
                     $mdJenisEmisi->save();
                 }
             }
