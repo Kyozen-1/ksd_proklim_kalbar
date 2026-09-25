@@ -4,17 +4,22 @@
     @include('frontend.layouts.head')
 </head>
 <body class="h-full flex flex-col bg-slate-50 font-sans text-slate-800 antialiased selection:bg-emerald-500 selection:text-white">
-    
-    <!-- Navbar Header -->
-    @include('frontend.layouts.navbar')
+    @hasSection('fullscreen')
+        <main class="min-h-0 flex-grow">
+            @yield('content')
+        </main>
+    @else
+        <!-- Navbar Header -->
+        @include('frontend.layouts.navbar')
 
-    <!-- Main Content Area -->
-    <main class="flex-grow">
-        @yield('content')
-    </main>
+        <!-- Main Content Area -->
+        <main class="flex-grow">
+            @yield('content')
+        </main>
 
-    <!-- Footer -->
-    @include('frontend.layouts.footer')
+        <!-- Footer -->
+        @include('frontend.layouts.footer')
+    @endif
 
     <!-- Scripts -->
     @include('frontend.layouts.script')

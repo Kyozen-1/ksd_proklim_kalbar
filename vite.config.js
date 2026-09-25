@@ -3,6 +3,11 @@ import laravel from 'laravel-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
+    server: {
+        headers: {
+            'X-Vite-Project': 'ksd-proklim-kalbar',
+        },
+    },
     plugins: [
         laravel({
             input: [

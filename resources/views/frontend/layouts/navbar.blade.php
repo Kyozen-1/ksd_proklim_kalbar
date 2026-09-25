@@ -40,8 +40,8 @@
                     
                     <button @click="dropdownOpen = !dropdownOpen" 
                             type="button" 
-                            class="px-4 py-2 rounded-lg text-sm font-semibold inline-flex items-center gap-1.5 transition-all focus:outline-none cursor-pointer {{ request()->routeIs(['feature-development', 'edukasi', 'aksi-lingkungan', 'aksi-lingkungan-detail', 'data']) ? 'bg-[#00E58F] text-white' : 'text-slate-800 hover:text-[#00E58F] hover:bg-slate-100' }}"
-                            :class="dropdownOpen ? ({{ request()->routeIs(['feature-development', 'edukasi', 'aksi-lingkungan', 'aksi-lingkungan-detail', 'data']) ? 'false' : 'true' }} ? 'bg-[#D1FADF] text-[#00C875]' : 'bg-[#00E58F] text-white') : ''">
+                            class="px-4 py-2 rounded-lg text-sm font-semibold inline-flex items-center gap-1.5 transition-all focus:outline-none cursor-pointer {{ request()->routeIs(['proklim', 'igrk', 'sampah', 'kualitas-lingkungan', 'lb3', 'edukasi', 'aksi-lingkungan', 'aksi-lingkungan-detail', 'data']) ? 'bg-[#00E58F] text-white' : 'text-slate-800 hover:text-[#00E58F] hover:bg-slate-100' }}"
+                            :class="dropdownOpen ? ({{ request()->routeIs(['proklim', 'igrk', 'sampah', 'kualitas-lingkungan', 'lb3', 'edukasi', 'aksi-lingkungan', 'aksi-lingkungan-detail', 'data']) ? 'false' : 'true' }} ? 'bg-[#D1FADF] text-[#00C875]' : 'bg-[#00E58F] text-white') : ''">
                         <span>Program dan Aksi</span>
                         <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200" :class="{ 'rotate-180': dropdownOpen }"></i>
                     </button>
@@ -63,7 +63,7 @@
                             <!-- Column 1 -->
                             <div class="space-y-6">
                                 <!-- PROKLIM -->
-                                <a href="{{ route('feature-development', ['feature' => 'proklim']) }}" class="flex items-start gap-3 group">
+                                <a href="{{ route('proklim') }}" class="flex items-start gap-3 group">
                                     <i class="fa-solid fa-chevron-right text-[#00E58F] text-xs mt-1 transition-transform group-hover:translate-x-1"></i>
                                     <div>
                                         <h4 class="text-sm font-bold text-[#1A1A1A] group-hover:text-[#00E58F] transition-colors leading-none">PROKLIM</h4>
@@ -72,7 +72,7 @@
                                 </a>
 
                                 <!-- IGRK -->
-                                <a href="{{ route('feature-development', ['feature' => 'igrk']) }}" class="flex items-start gap-3 group">
+                                <a href="{{ route('igrk') }}" class="flex items-start gap-3 group">
                                     <i class="fa-solid fa-chevron-right text-[#00E58F] text-xs mt-1 transition-transform group-hover:translate-x-1"></i>
                                     <div>
                                         <h4 class="text-sm font-bold text-[#1A1A1A] group-hover:text-[#00E58F] transition-colors leading-none">IGRK</h4>
@@ -81,7 +81,7 @@
                                 </a>
 
                                 <!-- Sampah -->
-                                <a href="{{ route('feature-development', ['feature' => 'sampah']) }}" class="flex items-start gap-3 group">
+                                <a href="{{ route('sampah') }}" class="flex items-start gap-3 group">
                                     <i class="fa-solid fa-chevron-right text-[#00E58F] text-xs mt-1 transition-transform group-hover:translate-x-1"></i>
                                     <div>
                                         <h4 class="text-sm font-bold text-[#1A1A1A] group-hover:text-[#00E58F] transition-colors leading-none">Sampah</h4>
@@ -93,7 +93,7 @@
                             <!-- Column 2 -->
                             <div class="space-y-6">
                                 <!-- Kualitas Lingkungan -->
-                                <a href="{{ route('feature-development', ['feature' => 'kualitas-lingkungan']) }}" class="flex items-start gap-3 group">
+                                <a href="{{ route('kualitas-lingkungan') }}" class="flex items-start gap-3 group">
                                     <i class="fa-solid fa-chevron-right text-[#00E58F] text-xs mt-1 transition-transform group-hover:translate-x-1"></i>
                                     <div>
                                         <h4 class="text-sm font-bold text-[#1A1A1A] group-hover:text-[#00E58F] transition-colors leading-none">Kualitas Lingkungan</h4>
@@ -102,7 +102,7 @@
                                 </a>
 
                                 <!-- LB3 -->
-                                <a href="{{ route('feature-development', ['feature' => 'lb3']) }}" class="flex items-start gap-3 group">
+                                <a href="{{ route('lb3') }}" class="flex items-start gap-3 group">
                                     <i class="fa-solid fa-chevron-right text-[#00E58F] text-xs mt-1 transition-transform group-hover:translate-x-1"></i>
                                     <div>
                                         <h4 class="text-sm font-bold text-[#1A1A1A] group-hover:text-[#00E58F] transition-colors leading-none">LB3</h4>
@@ -199,11 +199,11 @@
                 <i class="fa-solid fa-chevron-down text-xs transition-transform" :class="{ 'rotate-180': subOpen }"></i>
             </button>
             <div x-show="subOpen" class="pl-6 space-y-2 py-2">
-                <a href="{{ route('feature-development', ['feature' => 'proklim']) }}" class="block text-sm font-semibold text-[#00E58F]">PROKLIM (Program Kampung Iklim)</a>
-                <a href="{{ route('feature-development', ['feature' => 'igrk']) }}" class="block text-sm font-semibold text-[#00E58F]">IGRK (Inventaris Gas Rumah Kaca)</a>
-                <a href="{{ route('feature-development', ['feature' => 'sampah']) }}" class="block text-sm font-semibold text-[#00E58F]">Sampah (Pengelolaan Sampah)</a>
-                <a href="{{ route('feature-development', ['feature' => 'kualitas-lingkungan']) }}" class="block text-sm font-semibold text-[#00E58F]">Kualitas Lingkungan</a>
-                <a href="{{ route('feature-development', ['feature' => 'lb3']) }}" class="block text-sm font-semibold text-[#00E58F]">LB3 (Limbah Bahan Berbahaya Beracun)</a>
+                <a href="{{ route('proklim') }}" class="block text-sm font-semibold text-[#00E58F]">PROKLIM (Program Kampung Iklim)</a>
+                <a href="{{ route('igrk') }}" class="block text-sm font-semibold text-[#00E58F]">IGRK (Inventaris Gas Rumah Kaca)</a>
+                <a href="{{ route('sampah') }}" class="block text-sm font-semibold text-[#00E58F]">Sampah (Pengelolaan Sampah)</a>
+                <a href="{{ route('kualitas-lingkungan') }}" class="block text-sm font-semibold text-[#00E58F]">Kualitas Lingkungan</a>
+                <a href="{{ route('lb3') }}" class="block text-sm font-semibold text-[#00E58F]">LB3 (Limbah Bahan Berbahaya Beracun)</a>
                 <a href="{{ route('edukasi') }}" class="block text-sm font-semibold text-[#00E58F]">Edukasi Aksi Hijau</a>
             </div>
         </div>

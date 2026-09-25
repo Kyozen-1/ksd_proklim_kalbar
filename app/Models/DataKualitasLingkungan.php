@@ -15,4 +15,5 @@ class DataKualitasLingkungan extends Model
     {
         return $this->belongsTo('App\Models\MdKategoriKualitasLingkungan', 'kategori_kualitas_lingkungan_id');
     }
+
 }
