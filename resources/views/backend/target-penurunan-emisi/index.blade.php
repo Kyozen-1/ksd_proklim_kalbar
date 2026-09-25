@@ -1,6 +1,6 @@
 @extends('backend.layouts.app')
-@section('title', 'Jenis Emisi | Master Data | PROKLIM Kalimantan Barat')
-@section('header', 'Jenis Emisi | Master Data')
+@section('title', 'Target Penurunan Emisi | PROKLIM Kalimantan Barat')
+@section('header', 'Target Penurunan Emisi')
 
 @section('css')
     <link href="{{ asset('/backend_template/libs/datatables/dataTables.bootstrap4.css') }}" rel="stylesheet" type="text/css" />
@@ -8,7 +8,6 @@
     <link href="{{ asset('/backend_template/libs/datatables/buttons.bootstrap4.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/backend_template/libs/datatables/select.bootstrap4.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/backend_template/libs/custombox/custombox.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('/backend_template/libs/dropify/dropify.min.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}">
     <style>
         .table th {
@@ -18,7 +17,6 @@
             justify-content: center;
             text-align: center;
         }
-
         .select2-container .select2-selection--single {
             height: 38px;           /* samakan dengan input/select */
             display: flex;
@@ -59,15 +57,13 @@
                         </button>
                     </div>
                 </div>
-                <table id="table_md_jenis_emisi" class="table table-bordered table-bordered dt-responsive nowrap">
+                <table id="table_target_penurunan_emisi" class="table table-bordered table-bordered dt-responsive nowrap">
                     <thead>
                         <tr>
                             <th width="5%">No</th>
                             <th width="10%">Aksi</th>
-                            <th>Sektor Utama</th>
-                            <th>Nama</th>
-                            <th>Satuan</th>
-                            <th>Jenis Perhitungan</th>
+                            <th>Kabupaten/Kota</th>
+                            <th>Nilai (tCO2e)</th>
                         </tr>
                     </thead>
                 </table>
@@ -84,38 +80,22 @@
                 </div>
                 <div class="modal-body">
                     <span id="form_result"></span>
-                    <form class="form-horizontal" id="form_md_jenis_emisi" method="POST" data-parsley-validate novalidate>
+                    <form class="form-horizontal" id="form_target_penurunan_emisi" method="POST" data-parsley-validate novalidate>
                         @csrf
                         <div class="form-group">
-                            <label for="sektor_utama_emisi_id" class="control-label">Sektor Utama Emisi</label>
-                            <select name="sektor_utama_emisi_id" id="sektor_utama_emisi_id" class="form-control" required>
-                                <option value="">Pilih</option>
-                                @foreach ($sektorUtamaEmisis as $sektorUtamaEmisi)
-                                    <option value="{{$sektorUtamaEmisi['id']}}">{{$sektorUtamaEmisi['nama']}}</option>
+                            <label for="kabupaten_kota_id" class="control-label"> Kabupaten / Kota<span class="text-danger">*</span></label>
+                            <select name="kabupaten_kota_id" id="kabupaten_kota_id" class="form-control" required>
+                                <option value=""> Pilih Kabupaten / Kota </option>
+                                @foreach ($kabupatenKotas as $kabupatenKota)
+                                    <option value="{{$kabupatenKota['id']}}">{{$kabupatenKota['nama']}}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="nama" class="control-label">Nama Jenis Emisi<span class="text-danger">*</span></label>
-                            <input type="text" name="nama" id="nama" parsley-trigger="change" required
-                            placeholder="Masukan nama Jenis Emisi..." class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="satuan" class="control-label">Satuan</label>
-                            <select name="satuan" id="satuan" class="form-control" required>
-                                <option value="">Pilih</option>
-                                <option value="tco2e">tCO2e</option>
-                                <option value="kl">KL</option>
-                                <option value="gwh">GWH</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="jenis_perhitungan" class="control-label">Jenis Perhitungan</label>
-                            <select name="jenis_perhitungan" id="jenis_perhitungan" class="form-control" required>
-                                <option value="">Pilih</option>
-                                <option value="tambah">Tambah</option>
-                                <option value="kurang">Kurang</option>
-                            </select>
+                            <label for="nama" class="control-label">Target Penurunan Emisi<span class="text-danger">*</span></label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" name="nilai" id="nilai" class="form-control" min="0" step="0.001" parsley-trigger="change" required><span class="input-group-text">tCO2e</span>
+                            </div>
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -125,43 +105,6 @@
                     <button type="submit" name="aksi_button" id="aksi_button" class="btn btn-primary waves-effect width-md waves-light">Save</button>
                 </div>
             </form>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div>
-
-    <div id="detail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="detailModal" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="detail-title">Detail Data</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group row">
-                        <label for="detail_sektor_utama_emisi" class="control-label col-md-6">Sektor Utama Emisi</label>
-                        <div class="col-md-6">
-                            <span id="detail_sektor_utama_emisi"></span>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="detail_nama" class="control-label col-md-6">Nama Jenis Emisi</label>
-                        <div class="col-md-6">
-                            <span id="detail_nama"></span>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="detail_satuan" class="control-label col-md-6">Satuan</label>
-                        <div class="col-md-6">
-                            <span id="detail_satuan"></span>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="detail_satuan" class="control-label col-md-6">Jenis Perhitungan</label>
-                        <div class="col-md-6">
-                            <span id="detail_jenis_perhitungan"></span>
-                        </div>
-                    </div>
-                </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div>
@@ -195,13 +138,13 @@
     <script src="{{ asset('js/sweetalert.js') }}"></script>
     <script src="{{ asset('js/select2.min.js') }}"></script>
     <script>
-        $('#sektor_utama_emisi_id').select2();
+        $('#kabupaten_kota_id').select2();
 
-        var dataTables = $('#table_md_jenis_emisi').DataTable({
+        var dataTables = $('#table_target_penurunan_emisi').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('cms.master-data.jenis-emisi.datatable') }}",
+                url: "{{ route('cms.target-penurunan-emisi.datatable') }}",
             },
             columns:[
                 {
@@ -213,67 +156,39 @@
                     orderable: false
                 },
                 {
-                    data: 'sektor_utama_emisi',
-                    name: 'sektor_utama_emisi'
+                    data: 'kabupaten_kota_id',
+                    name: 'kabupaten_kota_id'
                 },
                 {
-                    data: 'nama',
-                    name: 'nama'
+                    data: 'nilai',
+                    name: 'nilai'
                 },
-                {
-                    data: 'satuan',
-                    name: 'satuan'
-                },
-                {
-                    data: 'jenis_perhitungan',
-                    name: 'jenis_perhitungan'
-                }
             ]
         });
 
-        function reset()
-        {
-            $('#form_md_jenis_emisi')[0].reset();
-            $("[name='sektor_utama_emisi_id']").val('').trigger('change');
-            $("[name='satuan']").val('').trigger('change');
-            $("[name='jenis_perhitungan']").val('').trigger('change');
+        function reset() {
+            $('#form_target_penurunan_emisi')[0].reset();
+            $("[name='kabupaten_kota_id']") .val('') .trigger('change');
+            $('#hidden_id').val('');
+            $('#aksi').val('Save');
         }
 
         $('#create').click(function(){
             reset();
-            $('#form_result').html('');
             $('#aksi_button').text('Save');
             $('#aksi_button').prop('disabled', false);
             $('.modal-title').text('Add Data');
             $('#aksi_button').val('Save');
             $('#aksi').val('Save');
+            $('#form_result').html('');
         });
 
-        $(document).on('click', '.detail', function(){
-            var id = $(this).attr('id');
-            var url = "{{ route('cms.master-data.jenis-emisi.show', ['id' => ":id"]) }}";
-            url = url.replace(":id", id);
-            $.ajax({
-                url: url,
-                dataType: "json",
-                success: function(data)
-                {
-                    $('#detail-title').text('Detail Data');
-                    $('#detail_sektor_utama_emisi').text(data.result.sektor_utama_emisi);
-                    $('#detail_nama').text(data.result.nama);
-                    $('#detail_satuan').text(data.result.satuan);
-                    $('#detail_jenis_perhitungan').text(data.result.jenis_perhitungan);
-                    $('#detail').modal('show');
-                }
-            });
-        });
-
-        $('#form_md_jenis_emisi').on('submit', function(e){
+        $('#form_target_penurunan_emisi').on('submit', function(e){
             e.preventDefault();
             if($('#aksi').val() == 'Save')
             {
                 $.ajax({
-                    url: "{{ route('cms.master-data.jenis-emisi.store') }}",
+                    url: "{{ route('cms.target-penurunan-emisi.store') }}",
                     method: "POST",
                     data: $(this).serialize(),
                     dataType: "json",
@@ -289,17 +204,15 @@
                         {
                             html = '<div class="alert alert-danger">'+data.errors+'</div>';
                             $('#aksi_button').prop('disabled', false);
-                            reset()
                             $('#aksi_button').text('Save');
-                            $('#table_md_jenis_emisi').DataTable().ajax.reload();
                         }
                         if(data.success)
                         {
                             html = '<div class="alert alert-success">'+data.success+'</div>';
                             $('#aksi_button').prop('disabled', false);
-                            reset()
                             $('#aksi_button').text('Save');
-                            $('#table_md_jenis_emisi').DataTable().ajax.reload();
+                            $('#table_target_penurunan_emisi').DataTable().ajax.reload();
+                            reset();
                         }
 
                         $('#form_result').html(html);
@@ -309,7 +222,7 @@
             if($('#aksi').val() == 'Edit')
             {
                 $.ajax({
-                    url: "{{ route('cms.master-data.jenis-emisi.update') }}",
+                    url: "{{ route('cms.target-penurunan-emisi.update') }}",
                     method: "POST",
                     data: $(this).serialize(),
                     dataType: "json",
@@ -328,10 +241,10 @@
                         }
                         if(data.success)
                         {
-                            reset();
                             $('#aksi_button').prop('disabled', false);
                             $('#aksi_button').text('Save');
-                            $('#table_md_jenis_emisi').DataTable().ajax.reload();
+                            $('#table_target_penurunan_emisi').DataTable().ajax.reload();
+                            reset();
                             $('#createModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
@@ -348,7 +261,7 @@
 
         $(document).on('click', '.edit', function(){
             var id = $(this).attr('id');
-            var url = "{{ route('cms.master-data.jenis-emisi.edit', ['id' => ":id"]) }}";
+            var url = "{{ route('cms.target-penurunan-emisi.edit', ['id' => ":id"]) }}";
             url = url.replace(":id", id);
 
             $('#form_result').html('');
@@ -357,16 +270,13 @@
                 dataType: "json",
                 success: function(data)
                 {
-                    let targetSektorUtamaEmisi = data.result.sektor_utama_emisi;
-                    let valueSektorUtamaEmisi = $('#sektor_utama_emisi_id option').filter(function () {
-                        return $(this).text() === targetSektorUtamaEmisi;
+                    let targetKabupatenKota = data.result.kabupaten_kota;
+                    let valueKabupatenKota = $('#kabupaten_kota_id option').filter(function () {
+                        return $(this).text() === targetKabupatenKota;
                     }).val();
-                    $("[name='sektor_utama_emisi_id']").val(valueSektorUtamaEmisi).trigger('change');
+                    $("[name='kabupaten_kota_id']").val(valueKabupatenKota).trigger('change');
 
-                    $('#nama').val(data.result.nama);
-                    $("[name='satuan']").val(data.result.satuan).trigger('change');
-                    $("[name='jenis_perhitungan']").val(data.result.jenis_perhitungan).trigger('change');
-
+                    $('#nilai').val(data.result.nilai);
                     $('#hidden_id').val(id);
                     $('.modal-title').text('Edit Data');
                     $('#aksi_button').text('Edit');
@@ -374,57 +284,6 @@
                     $('#aksi_button').val('Edit');
                     $('#aksi').val('Edit');
                     $('#createModal').modal('show');
-                }
-            });
-        });
-
-        $(document).on('click', '.delete',function(){
-            var id = $(this).attr('id');
-            var url = "{{ route('cms.master-data.jenis-emisi.destroy', ['id' => ":id"]) }}";
-            url = url.replace(":id", id);
-            return new swal({
-                title: "Apakah Anda Yakin Menghapus Ini?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#1976D2",
-                confirmButtonText: "Ya"
-            }).then((result)=>{
-                if(result.value)
-                {
-                    $.ajax({
-                        url: url,
-                        dataType: "json",
-                        beforeSend: function()
-                        {
-                            return new swal({
-                                title: "Checking...",
-                                text: "Harap Menunggu",
-                                imageUrl: "{{ asset('/images/preloader.gif') }}",
-                                showConfirmButton: false,
-                                allowOutsideClick: false
-                            });
-                        },
-                        success: function(data)
-                        {
-                            if(data.errors)
-                            {
-                                Swal.fire({
-                                    icon: 'errors',
-                                    title: data.errors,
-                                    showConfirmButton: true
-                                });
-                            }
-                            if(data.success)
-                            {
-                                $('#table_md_jenis_emisi').DataTable().ajax.reload();
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: data.success,
-                                    showConfirmButton: true
-                                });
-                            }
-                        }
-                    });
                 }
             });
         });

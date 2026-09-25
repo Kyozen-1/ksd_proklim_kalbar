@@ -11,6 +11,8 @@ use App\Http\Controllers\Backend\TimbulanLb3Controller;
 use App\Http\Controllers\Backend\KualitasLingkunganController;
 use App\Http\Controllers\Backend\JumlahPendudukController;
 use App\Http\Controllers\Backend\SampahController;
+use App\Http\Controllers\Backend\TargetPenurunanEmisiController;
+use App\Http\Controllers\Backend\EmisiController;
 use App\Http\Controllers\Backend\MasterData\JabatanController;
 use App\Http\Controllers\Backend\MasterData\SectionLandingPageController;
 use App\Http\Controllers\Backend\MasterData\KategoriProklimController;
@@ -112,6 +114,22 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::post('/', [SampahController::class, 'store'])->name('cms.sampah.store');
             Route::get('/datatable', [SampahController::class, 'datatable'])->name('cms.sampah.datatable');
             Route::post('/update', [SampahController::class, 'update'])->name('cms.sampah.update');
+        });
+
+        Route::prefix('target-penurunan-emisi')->group(function(){
+            Route::get('/', [TargetPenurunanEmisiController::class, 'index'])->name('cms.target-penurunan-emisi.index');
+            Route::get('/datatable', [TargetPenurunanEmisiController::class, 'datatable'])->name('cms.target-penurunan-emisi.datatable');
+            Route::post('/',[TargetPenurunanEmisiController::class, 'store'])->name('cms.target-penurunan-emisi.store');
+            Route::get('/edit/{id}',[TargetPenurunanEmisiController::class, 'edit'])->name('cms.target-penurunan-emisi.edit');
+            Route::post('/update',[TargetPenurunanEmisiController::class, 'update'])->name('cms.target-penurunan-emisi.update');
+        });
+
+        Route::prefix('emisi')->group(function(){
+            Route::get('/', [EmisiController::class, 'index'])->name('cms.emisi.index');
+            Route::get('/datatable', [EmisiController::class, 'datatable'])->name('cms.emisi.datatable');
+            Route::post('/', [EmisiController::class, 'store'])->name('cms.emisi.store');
+            Route::get('/datatable', [EmisiController::class, 'datatable'])->name('cms.emisi.datatable');
+            Route::post('/update', [EmisiController::class, 'update'])->name('cms.emisi.update');
         });
     });
 

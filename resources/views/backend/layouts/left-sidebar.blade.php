@@ -14,6 +14,17 @@
                     </li>
                     <li>
                         <a href="javascript: void(0);">
+                            <i class="mdi mdi-factory"></i>
+                            <span> Emisi </span>
+                            <span class="menu-arrow"></span>
+                        </a>
+                        <ul class="nav-second-level" aria-expanded="false">
+                            <li><a href="{{ route('cms.target-penurunan-emisi.index') }}">Target Penurunan Emisi</a></li>
+                            <li><a href="{{ route('cms.emisi.index') }}">Data Emisi</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript: void(0);">
                             <i class="mdi mdi-delete"></i>
                             <span> Sampah </span>
                             <span class="menu-arrow"></span>

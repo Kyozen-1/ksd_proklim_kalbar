@@ -16,4 +16,9 @@ class DataEmisi extends Model
     {
         return $this->belongsTo('App\Models\Regency', 'kabupaten_kota_id');
     }
+
+    public function jenis_emisi()
+    {
+        return $this->belongsTo('App\Models\MdJenisEmisi', 'jenis_emisi_id');
+    }
 }
