@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
     @include('auth.login.layouts.head')
 
 
-    <body class="authentication-bg">
+    <body class="login-body">
 
         @yield('content')
         <!-- end page -->
