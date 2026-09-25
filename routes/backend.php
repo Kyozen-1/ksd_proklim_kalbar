@@ -9,6 +9,8 @@ use App\Http\Controllers\Backend\AnggotaPelaksanaController;
 use App\Http\Controllers\Backend\LandingPageController;
 use App\Http\Controllers\Backend\TimbulanLb3Controller;
 use App\Http\Controllers\Backend\KualitasLingkunganController;
+use App\Http\Controllers\Backend\JumlahPendudukController;
+use App\Http\Controllers\Backend\SampahController;
 use App\Http\Controllers\Backend\MasterData\JabatanController;
 use App\Http\Controllers\Backend\MasterData\SectionLandingPageController;
 use App\Http\Controllers\Backend\MasterData\KategoriProklimController;
@@ -94,6 +96,22 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::post('/', [KualitasLingkunganController::class, 'store'])->name('cms.kualitas-lingkungan.store');
             Route::get('/datatable', [KualitasLingkunganController::class, 'datatable'])->name('cms.kualitas-lingkungan.datatable');
             Route::post('/update', [KualitasLingkunganController::class, 'update'])->name('cms.kualitas-lingkungan.update');
+        });
+
+        Route::prefix('jumlah-penduduk')->group(function(){
+            Route::get('/', [JumlahPendudukController::class, 'index'])->name('cms.jumlah-penduduk.index');
+            Route::get('/datatable', [JumlahPendudukController::class, 'datatable'])->name('cms.jumlah-penduduk.datatable');
+            Route::post('/',[JumlahPendudukController::class, 'store'])->name('cms.jumlah-penduduk.store');
+            Route::get('/edit/{id}',[JumlahPendudukController::class, 'edit'])->name('cms.jumlah-penduduk.edit');
+            Route::post('/update',[JumlahPendudukController::class, 'update'])->name('cms.jumlah-penduduk.update');
+        });
+
+        Route::prefix('sampah')->group(function(){
+            Route::get('/', [SampahController::class, 'index'])->name('cms.sampah.index');
+            Route::get('/datatable', [SampahController::class, 'datatable'])->name('cms.sampah.datatable');
+            Route::post('/', [SampahController::class, 'store'])->name('cms.sampah.store');
+            Route::get('/datatable', [SampahController::class, 'datatable'])->name('cms.sampah.datatable');
+            Route::post('/update', [SampahController::class, 'update'])->name('cms.sampah.update');
         });
     });
 

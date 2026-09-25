@@ -13,6 +13,17 @@
                         </a>
                     </li>
                     <li>
+                        <a href="javascript: void(0);">
+                            <i class="mdi mdi-delete"></i>
+                            <span> Sampah </span>
+                            <span class="menu-arrow"></span>
+                        </a>
+                        <ul class="nav-second-level" aria-expanded="false">
+                            <li><a href="{{ route('cms.jumlah-penduduk.index') }}">Jumlah Penduduk</a></li>
+                            <li><a href="{{ route('cms.sampah.index') }}">Data Sampah</a></li>
+                        </ul>
+                    </li>
+                    <li>
                         <a href="{{ route('cms.kualitas-lingkungan.index') }}">
                             <i class="mdi mdi-leaf"></i>
                             <span> Kualitas Lingkungan </span>
