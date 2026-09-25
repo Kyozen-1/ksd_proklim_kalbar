@@ -9,11 +9,21 @@ use App\Models\Dokumen;
 use App\Models\Faq;
 use App\Models\Kegiatan;
 use App\Models\LandingPageSection;
+use App\Models\MapLocation;
 use App\Models\PivotGambarBerita;
 use App\Models\PivotGambarKegiatan;
 use App\Models\Regency;
 use App\Models\Village;
+use App\Services\ProklimDashboardService;
+use App\Services\IgrkDashboardService;
+use App\Services\KualitasLingkunganDashboardService;
+use App\Services\Lb3DashboardService;
+use App\Services\MapDashboardService;
+use App\Services\SampahDashboardService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class HomeController extends Controller
 {
@@ -89,57 +99,190 @@ class HomeController extends Controller
         return view('frontend.pages.edukasi');
     }
 
-    public function featureDevelopment(string $feature)
+    public function proklim(Request $request, ProklimDashboardService $dashboardService)
     {
-        $features = [
-            'proklim' => [
-                'name' => 'PROKLIM',
-                'description' => 'Informasi Program Kampung Iklim sedang kami siapkan agar dapat disajikan secara lengkap dan mudah diakses.',
-            ],
-            'igrk' => [
-                'name' => 'IGRK',
-                'description' => 'Informasi Inventaris Gas Rumah Kaca sedang dalam proses pengembangan dan penyempurnaan data.',
-            ],
-            'sampah' => [
-                'name' => 'Pengelolaan Sampah',
-                'description' => 'Informasi dan layanan pengelolaan sampah sedang kami kembangkan untuk melayani masyarakat dengan lebih baik.',
-            ],
-            'kualitas-lingkungan' => [
-                'name' => 'Kualitas Lingkungan',
-                'description' => 'Informasi kualitas lingkungan sedang dalam tahap pengembangan dan akan tersedia pada pembaruan berikutnya.',
-            ],
-            'lb3' => [
-                'name' => 'Limbah B3',
-                'description' => 'Informasi Limbah Bahan Berbahaya dan Beracun sedang kami siapkan dan sempurnakan.',
-            ],
-        ];
+        $years = $dashboardService->availableYears();
+        $requestedYear = $request->integer('year');
+        $year = in_array($requestedYear, $years, true) ? $requestedYear : ($years[0] ?? now()->year);
+        $dashboard = $dashboardService->dashboard($year);
 
-        abort_unless(isset($features[$feature]), 404);
-
-        return view('frontend.pages.feature_development', [
-            'featureName' => $features[$feature]['name'],
-            'featureDescription' => $features[$feature]['description'],
-        ]);
+        return view('frontend.pages.proklim', compact('dashboard', 'year', 'years'));
     }
 
-    public function data()
-    {
-        $regencies = Regency::orderBy('name')->get();
-        $locations = Village::query()
-            ->join('districts', 'villages.district_id', '=', 'districts.id')
-            ->join('regencies', 'districts.regency_id', '=', 'regencies.id')
-            ->select([
-                'villages.id',
-                'villages.name as village_name',
-                'districts.name as district_name',
-                'regencies.name as regency_name',
-            ])
-            ->orderBy('regencies.name')
-            ->orderBy('districts.name')
-            ->orderBy('villages.name')
-            ->paginate(15);
+    public function proklimRegion(
+        Request $request,
+        Regency $regency,
+        ProklimDashboardService $dashboardService
+    ): JsonResponse {
+        $validated = $request->validate([
+            'year' => ['required', 'integer', 'min:2000', 'max:'.(now()->year + 1)],
+        ]);
 
-        return view('frontend.pages.data', compact('locations', 'regencies'));
+        return response()
+            ->json($dashboardService->regionDetail($regency, (int) $validated['year']))
+            ->header('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
+    }
+
+    public function igrk(Request $request, IgrkDashboardService $dashboardService)
+    {
+        $years = $dashboardService->availableYears();
+        $requestedYear = $request->integer('year');
+        $year = in_array($requestedYear, $years, true) ? $requestedYear : ($years[0] ?? now()->year);
+        $dashboard = $dashboardService->dashboard($year);
+
+        return view('frontend.pages.igrk', compact('dashboard', 'year', 'years'));
+    }
+
+    public function igrkRegion(
+        Request $request,
+        Regency $regency,
+        IgrkDashboardService $dashboardService
+    ): JsonResponse {
+        $validated = $request->validate([
+            'year' => ['required', 'integer', 'min:2000', 'max:'.(now()->year + 1)],
+        ]);
+
+        return response()
+            ->json($dashboardService->regionDetail($regency, (int) $validated['year']))
+            ->header('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
+    }
+
+    public function sampah(Request $request, SampahDashboardService $dashboardService)
+    {
+        $years = $dashboardService->availableYears();
+        $requestedYear = $request->integer('year');
+        $year = in_array($requestedYear, $years, true) ? $requestedYear : ($years[0] ?? now()->year);
+        $dashboard = $dashboardService->dashboard($year);
+        $minimumChartYear = min(min($years ?: [$year]), max(2000, $year - 4));
+        $maximumChartYear = max(max($years ?: [$year]), $year);
+        $chartYears = range($minimumChartYear, $maximumChartYear);
+
+        return view('frontend.pages.sampah', compact('dashboard', 'year', 'years', 'chartYears'));
+    }
+
+    public function sampahRegion(
+        Request $request,
+        Regency $regency,
+        SampahDashboardService $dashboardService
+    ): JsonResponse {
+        $validated = $request->validate([
+            'year' => ['required', 'integer', 'min:2000', 'max:'.(now()->year + 1)],
+            'from_year' => ['nullable', 'integer', 'min:2000', 'max:'.(now()->year + 1)],
+            'to_year' => ['nullable', 'integer', 'min:2000', 'max:'.(now()->year + 1)],
+        ]);
+
+        $year = (int) $validated['year'];
+        $fromYear = (int) ($validated['from_year'] ?? max(2000, $year - 4));
+        $toYear = (int) ($validated['to_year'] ?? $year);
+
+        if ($fromYear > $toYear || $toYear - $fromYear > 4) {
+            throw ValidationException::withMessages([
+                'from_year' => 'Rentang grafik harus berurutan dan maksimal lima tahun.',
+            ]);
+        }
+
+        return response()
+            ->json($dashboardService->regionDetail($regency, $year, $fromYear, $toYear))
+            ->header('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
+    }
+
+    public function kualitasLingkungan(Request $request, KualitasLingkunganDashboardService $dashboardService)
+    {
+        $years = $dashboardService->availableYears();
+        $requestedYear = $request->integer('year');
+        $year = in_array($requestedYear, $years, true) ? $requestedYear : ($years[0] ?? now()->year);
+        $dashboard = $dashboardService->dashboard($year);
+        $minimumChartYear = min(min($years ?: [$year]), max(2000, $year - 4));
+        $maximumChartYear = max(max($years ?: [$year]), $year);
+        $chartYears = range($minimumChartYear, $maximumChartYear);
+
+        return view('frontend.pages.kualitas_lingkungan', compact('dashboard', 'year', 'years', 'chartYears'));
+    }
+
+    public function kualitasLingkunganRegion(
+        Request $request,
+        Regency $regency,
+        KualitasLingkunganDashboardService $dashboardService
+    ): JsonResponse {
+        $validated = $request->validate([
+            'year' => ['required', 'integer', 'min:2000', 'max:'.(now()->year + 1)],
+            'from_year' => ['nullable', 'integer', 'min:2000', 'max:'.(now()->year + 1)],
+            'to_year' => ['nullable', 'integer', 'min:2000', 'max:'.(now()->year + 1)],
+        ]);
+
+        $year = (int) $validated['year'];
+        $fromYear = (int) ($validated['from_year'] ?? max(2000, $year - 4));
+        $toYear = (int) ($validated['to_year'] ?? $year);
+
+        if ($fromYear > $toYear || $toYear - $fromYear > 4) {
+            throw ValidationException::withMessages([
+                'from_year' => 'Rentang grafik harus berurutan dan maksimal lima tahun.',
+            ]);
+        }
+
+        return response()
+            ->json($dashboardService->regionDetail($regency, $year, $fromYear, $toYear))
+            ->header('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
+    }
+
+    public function lb3(Request $request, Lb3DashboardService $dashboardService)
+    {
+        $years = $dashboardService->availableYears();
+        $requestedYear = $request->integer('year');
+        $year = in_array($requestedYear, $years, true) ? $requestedYear : ($years[0] ?? now()->year);
+        $dashboard = $dashboardService->dashboard($year);
+
+        return view('frontend.pages.lb3', compact('dashboard', 'year', 'years'));
+    }
+
+    public function lb3Region(
+        Request $request,
+        Regency $regency,
+        Lb3DashboardService $dashboardService
+    ): JsonResponse {
+        $validated = $request->validate([
+            'year' => ['required', 'integer', 'min:2000', 'max:'.(now()->year + 1)],
+        ]);
+
+        return response()
+            ->json($dashboardService->regionDetail($regency, (int) $validated['year']))
+            ->header('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
+    }
+
+    public function data(MapDashboardService $dashboardService)
+    {
+        return view('frontend.pages.data', ['mapConfig' => $dashboardService->pageConfig()]);
+    }
+
+    public function mapMarkers(Request $request, MapDashboardService $dashboardService): JsonResponse
+    {
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+            'regency' => ['nullable', 'integer', 'exists:regencies,id'],
+            'features' => ['nullable', 'array', 'max:5'],
+            'features.*' => ['string', 'in:proklim,igrk,sampah,kualitas-lingkungan,lb3'],
+            'bounds' => ['nullable', 'string', 'max:100'],
+            'limit' => ['nullable', 'integer', 'min:1', 'max:500'],
+        ]);
+
+        if (!empty($validated['bounds'])) {
+            $bounds = array_map('floatval', explode(',', $validated['bounds']));
+            if (count($bounds) !== 4 || $bounds[0] >= $bounds[2] || $bounds[1] >= $bounds[3]) {
+                throw ValidationException::withMessages(['bounds' => 'Batas peta tidak valid.']);
+            }
+            $validated['bounds'] = $bounds;
+        }
+
+        return response()
+            ->json($dashboardService->markers($validated))
+            ->header('Cache-Control', 'public, max-age=60, stale-while-revalidate=30');
+    }
+
+    public function mapMarker(MapLocation $mapLocation, MapDashboardService $dashboardService): JsonResponse
+    {
+        return response()
+            ->json($dashboardService->detail($mapLocation))
+            ->header('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
     }
 
     public function contact()

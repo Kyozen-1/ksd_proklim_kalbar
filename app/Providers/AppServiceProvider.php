@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Vite;
 
 class AppServiceProvider extends ServiceProvider
 {
+    private const VITE_PROJECT_HEADER = 'X-Vite-Project: ksd-proklim-kalbar';
+
     /**
      * Register any application services.
      */
@@ -81,9 +83,18 @@ class AppServiceProvider extends ServiceProvider
         );
 
         $statusLine = fgets($connection);
+        $belongsToThisProject = false;
+
+        while (($headerLine = fgets($connection)) !== false && trim($headerLine) !== '') {
+            if (strcasecmp(trim($headerLine), self::VITE_PROJECT_HEADER) === 0) {
+                $belongsToThisProject = true;
+            }
+        }
+
         fclose($connection);
 
         return is_string($statusLine)
-            && preg_match('/^HTTP\/\d(?:\.\d)?\s+[23]\d{2}\b/', $statusLine) === 1;
+            && preg_match('/^HTTP\/\d(?:\.\d)?\s+[23]\d{2}\b/', $statusLine) === 1
+            && $belongsToThisProject;
     }
 }

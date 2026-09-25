@@ -13,4 +13,5 @@ class District extends Model
     {
         return $this->hasMany('App\Models\DataProklim', 'kecamatan_id');
     }
+
 }
