@@ -2,6 +2,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
+@include('shared.favicon')
+
 <title>@yield('title', 'Proklim Kalimantan Barat - Program Kampung Iklim DLHK Kalbar')</title>
 <meta name="description" content="@yield('meta_description', 'Portal Resmi Program Kampung Iklim (Proklim) Provinsi Kalimantan Barat - Akselerasi Adaptasi dan Mitigasi Perubahan Iklim.')">
 

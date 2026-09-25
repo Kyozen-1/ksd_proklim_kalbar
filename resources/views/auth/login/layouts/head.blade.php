@@ -5,8 +5,7 @@
     <meta content="Login REDD++ Kalimantan Barat" name="description" />
     <meta content="Kita Serba Digital" name="author" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('images/logo_pemprov_kalbar.webp') }}">
+    @include('shared.favicon')
 
     <!-- Bootstrap Css -->
     <link href="{{ asset('backend_template/css/bootstrap.min.css') }}" id="bootstrap-stylesheet" rel="stylesheet" type="text/css" />
@@ -14,5 +13,7 @@
     <link href="{{ asset('backend_template/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- App Css-->
     <link href="{{ asset('backend_template/css/app.min.css') }}" id="app-stylesheet" rel="stylesheet" type="text/css" />
+
+    @stack('styles')
 
 </head>
