@@ -16,7 +16,7 @@ https://proklim.kalbarprov.app/
 
 ## 👨‍💻 Developer
 
-**Kristoforus Fasco**
+**Tim PT. Kita Serba Digital**
 
 Dikembangkan untuk mendukung **Dinas Lingkungan Hidup dan Kehutanan Provinsi Kalimantan Barat** dalam digitalisasi pengelolaan data dan informasi lingkungan hidup.
 
