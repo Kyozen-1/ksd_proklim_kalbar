@@ -14,6 +14,16 @@
                     </li>
                     <li>
                         <a href="javascript: void(0);">
+                            <i class="mdi mdi-home-city-outline"></i>
+                            <span> Proklim </span>
+                            <span class="menu-arrow"></span>
+                        </a>
+                        <ul class="nav-second-level" aria-expanded="false">
+                            <li><a href="{{ route('cms.proklim.index') }}">Daftar Proklim</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript: void(0);">
                             <i class="mdi mdi-factory"></i>
                             <span> Emisi </span>
                             <span class="menu-arrow"></span>

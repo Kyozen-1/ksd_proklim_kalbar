@@ -48,4 +48,9 @@ class Regency extends Model
     {
         return $this->hasMany('App\Models\DataTimbulanLb3', 'kabupaten_kota_id');
     }
+
+    public function kecamatan()
+    {
+        return $this->hasMany('App\Models\District', 'regency_id');
+    }
 }

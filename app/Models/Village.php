@@ -13,4 +13,9 @@ class Village extends Model
     {
         return $this->hasMany('App\Models\DataProklim', 'kelurahan_id');
     }
+
+    public function kecamatan()
+    {
+        return $this->belongsTo('App\Models\District', 'district_id');
+    }
 }

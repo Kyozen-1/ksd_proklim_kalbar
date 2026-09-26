@@ -13,6 +13,7 @@ use App\Http\Controllers\Backend\JumlahPendudukController;
 use App\Http\Controllers\Backend\SampahController;
 use App\Http\Controllers\Backend\TargetPenurunanEmisiController;
 use App\Http\Controllers\Backend\EmisiController;
+use App\Http\Controllers\Backend\ProklimController;
 use App\Http\Controllers\Backend\MasterData\JabatanController;
 use App\Http\Controllers\Backend\MasterData\SectionLandingPageController;
 use App\Http\Controllers\Backend\MasterData\KategoriProklimController;
@@ -130,6 +131,18 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
             Route::post('/', [EmisiController::class, 'store'])->name('cms.emisi.store');
             Route::get('/datatable', [EmisiController::class, 'datatable'])->name('cms.emisi.datatable');
             Route::post('/update', [EmisiController::class, 'update'])->name('cms.emisi.update');
+        });
+
+        Route::prefix('proklim')->group(function(){
+            Route::get('/', [ProklimController::class, 'index'])->name('cms.proklim.index');
+            Route::get('/datatable', [ProklimController::class, 'datatable'])->name('cms.proklim.datatable');
+            Route::post('/get-kecamatan', [ProklimController::class, 'getKecamatan'])->name('cms.proklim.get-kecamatan');
+            Route::post('/get-kelurahan', [ProklimController::class, 'getKelurahan'])->name('cms.proklim.get-kelurahan');
+            Route::post('/', [ProklimController::class, 'store'])->name('cms.proklim.store');
+            Route::get('/detail/{id}', [ProklimController::class, 'detail'])->name('cms.proklim.detail');
+            Route::post('/update', [ProklimController::class, 'update'])->name('cms.proklim.update');
+            Route::get('/edit/{id}', [ProklimController::class, 'edit'])->name('cms.proklim.edit');
+            Route::get('/destroy/{id}',[ProklimController::class, 'destroy'])->name('cms.proklim.destroy');
         });
     });
 
