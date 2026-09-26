@@ -33,6 +33,7 @@ class ContentSecurityPolicy
             "https://cdn.ckeditor.com",
             "https://unpkg.com",
             "https://static.cloudflareinsights.com",
+            "https://nominatim.openstreetmap.org",
             "http://127.0.0.1:9000"
         ];
 
