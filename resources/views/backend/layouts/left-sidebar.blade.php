@@ -20,6 +20,8 @@
                         </a>
                         <ul class="nav-second-level" aria-expanded="false">
                             <li><a href="{{ route('cms.proklim.index') }}">Daftar Proklim</a></li>
+                            <li><a href="{{ route('cms.serapan-karbon-proklim.index') }}">Serapan Karbon</a></li>
+                            <li><a href="{{ route('cms.reduksi-emisi-proklim.index') }}">Reduksi Emisi</a></li>
                         </ul>
                     </li>
                     <li>
