@@ -28,12 +28,12 @@ class DatabaseSeeder extends Seeder
             // SintangSeeder::class,
             // KayongUtaraSeeder::class,
             // UserSeeder::class,
-            KategoriProklimSeeder::class,
-            SektorUtamaEmisiSeeder::class,
-            JenisEmisiSeeder::class,
-            KategoriSampahSeeder::class,
-            KategoriKualitasLingkunganSeeder::class,
-            SektorLb3Seeder::class,
+            // KategoriProklimSeeder::class,
+            // SektorUtamaEmisiSeeder::class,
+            // JenisEmisiSeeder::class,
+            // KategoriSampahSeeder::class,
+            // KategoriKualitasLingkunganSeeder::class,
+            // SektorLb3Seeder::class,
         ]);
     }
 }

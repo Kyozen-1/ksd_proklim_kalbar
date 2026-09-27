@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Auth;
+use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -14,17 +15,44 @@ class LoginController extends Controller
         return view('auth.login.index');
     }
 
+
     public function loginProcess(Request $request)
     {
         $request->validate([
             'email' => 'required|email|max:50',
-            'password'=>'required|max:50'
+            'password' => 'required|max:50',
         ]);
-        if(Auth::attempt($request->only('email', 'password'), $request->remember)){
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()
+                ->withInput($request->only('email'))
+                ->with('failed', 'Email atau password salah.');
+        }
+
+        if ($user->status_aktif !== '1') {
+            return back()
+                ->withInput($request->only('email'))
+                ->with('failed', 'Akun sudah tidak aktif. Silakan hubungi administrator.');
+        }
+
+        if (Auth::attempt(
+            [
+                'email' => $request->email,
+                'password' => $request->password,
+            ],
+        )) {
+            $request->session()->regenerate();
+
             return redirect()->route('cms.dashboard.index');
         }
-        return back()->with('failed', 'email atau password');
+
+        return back()
+            ->withInput($request->only('email'))
+            ->with('failed', 'Email atau password salah.');
     }
+
 
     public function logout()
     {

@@ -127,6 +127,7 @@
                             <span class="menu-arrow"></span>
                         </a>
                         <ul class="nav-second-level" aria-expanded="false">
+                            <li><a href="{{ route('cms.pengaturan.manajemen-akun.index') }}">Manajemen Akun</a></li>
                             <li><a href="{{ route('cms.pengaturan.api-client.index') }}">API Client</a></li>
                             <li><a href="{{ route('cms.pengaturan.api-permission.index') }}">API Permission</a></li>
                         </ul>
