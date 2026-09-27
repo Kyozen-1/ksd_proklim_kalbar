@@ -62,8 +62,9 @@
                         <tr>
                             <th width="5%">No</th>
                             <th width="10%">Aksi</th>
-                            <th>Kabupaten/Kota</th>
-                            <th>Nilai (tCO2e)</th>
+                            <th width="20%">Kabupaten/Kota</th>
+                            <th width="15%">Tahun</th>
+                            <th width="50%">Nilai (tCO2e)</th>
                         </tr>
                     </thead>
                 </table>
@@ -89,6 +90,12 @@
                                 @foreach ($kabupatenKotas as $kabupatenKota)
                                     <option value="{{$kabupatenKota['id']}}">{{$kabupatenKota['nama']}}</option>
                                 @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tahun" class="control-label"> Tahun<span class="text-danger">*</span></label>
+                            <select name="tahun" id="tahun" class="form-control" required>
+                                <option value=""> Pilih Tahun </option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -139,6 +146,17 @@
     <script src="{{ asset('js/select2.min.js') }}"></script>
     <script>
         $('#kabupaten_kota_id').select2();
+        $('#tahun').select2();
+
+        const currentYear = new Date().getFullYear();
+        const startYear = 2000;
+
+        for (let year = currentYear; year >= startYear; year--) {
+            $('#tahun').append(
+                `<option value="${year}">${year}</option>`
+            );
+
+        }
 
         var dataTables = $('#table_target_penurunan_emisi').DataTable({
             processing: true,
@@ -160,6 +178,10 @@
                     name: 'kabupaten_kota_id'
                 },
                 {
+                    data: 'tahun',
+                    name: 'tahun'
+                },
+                {
                     data: 'nilai',
                     name: 'nilai'
                 },
@@ -169,6 +191,7 @@
         function reset() {
             $('#form_target_penurunan_emisi')[0].reset();
             $("[name='kabupaten_kota_id']") .val('') .trigger('change');
+            $("[name='tahun']") .val('') .trigger('change');
             $('#hidden_id').val('');
             $('#aksi').val('Save');
         }
@@ -275,7 +298,7 @@
                         return $(this).text() === targetKabupatenKota;
                     }).val();
                     $("[name='kabupaten_kota_id']").val(valueKabupatenKota).trigger('change');
-
+                    $("[name='tahun']").val(data.result.tahun).trigger('change');
                     $('#nilai').val(data.result.nilai);
                     $('#hidden_id').val(id);
                     $('.modal-title').text('Edit Data');

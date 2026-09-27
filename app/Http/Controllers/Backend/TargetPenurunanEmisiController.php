@@ -44,6 +44,7 @@ class TargetPenurunanEmisiController extends Controller
             $data[] = [
                 'id' => Crypt::encryptString($d->id),
                 'kabupaten_kota_id' => $d->kabupaten_kota->name,
+                'tahun' => $d->tahun,
                 'nilai' => $d->nilai
             ];
         }
@@ -77,6 +78,7 @@ class TargetPenurunanEmisiController extends Controller
     {
         $errors = Validator::make($request->all(), [
             'kabupaten_kota_id' => 'required',
+            'tahun' => 'required',
             'nilai' => 'required',
         ]);
 
@@ -85,7 +87,13 @@ class TargetPenurunanEmisiController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
         try {
-            $targetPenurunanEmisi = new TargetPenurunanEmisi;
+            $cekTargetPenurunanEmisi = TargetPenurunanEmisi::where('tahun', $request->tahun)->first();
+            if($cekTargetPenurunanEmisi)
+            {
+                $targetPenurunanEmisi = TargetPenurunanEmisi::find($cekTargetPenurunanEmisi->id);
+            } else {
+                $targetPenurunanEmisi = new TargetPenurunanEmisi;
+            }
             $targetPenurunanEmisi->kabupaten_kota_id = Crypt::decryptString($request->kabupaten_kota_id);
             $targetPenurunanEmisi->nilai = $request->nilai;
             $targetPenurunanEmisi->save();
@@ -105,6 +113,7 @@ class TargetPenurunanEmisiController extends Controller
         $getData = TargetPenurunanEmisi::find($id);
         $dataSend = [
             'nilai' => (float)$getData->nilai,
+            'tahun' => $getData->tahun,
             'kabupaten_kota' => $getData->kabupaten_kota->name
         ];
 
@@ -118,13 +127,15 @@ class TargetPenurunanEmisiController extends Controller
     {
         $errors = Validator::make($request->all(), [
             'nilai' => 'required',
+            'tahun' => 'required',
             'kabupaten_kota_id' => 'required',
             'hidden_id' => 'required'
         ]);
 
-        if($errors -> fails())
-        {
-            return response()->json(['errors' => $errors->errors()->all()]);
+        if ($errors->fails()) {
+            return response()->json([
+                'errors' => $errors->errors()->all()
+            ]);
         }
 
         try {
@@ -132,13 +143,35 @@ class TargetPenurunanEmisiController extends Controller
             $kabupatenKotaId = Crypt::decryptString($request->kabupaten_kota_id);
 
             $targetPenurunanEmisi = TargetPenurunanEmisi::find($id);
-            $targetPenurunanEmisi->kabupaten_kota_id = $kabupatenKotaId;
+
+            if (!$targetPenurunanEmisi) {
+                return response()->json([
+                    'errors' => ['Data target penurunan emisi tidak ditemukan']
+                ]);
+            }
+            if ($targetPenurunanEmisi->tahun != null &&
+                ($targetPenurunanEmisi->kabupaten_kota_id != $kabupatenKotaId ||
+                $targetPenurunanEmisi->tahun != $request->tahun)
+            ) {
+                return response()->json([
+                    'errors' => [
+                        'Kabupaten/Kota dan tahun tidak dapat diubah. Data harus sesuai dengan data yang tersimpan.'
+                    ]
+                ]);
+            } else {
+                $targetPenurunanEmisi->tahun = $request->tahun;
+            }
             $targetPenurunanEmisi->nilai = $request->nilai;
             $targetPenurunanEmisi->save();
 
-            return response()->json(['success' => 'Berhasil merubah jumlah penduduk']);
+            return response()->json([
+                'success' => 'Berhasil merubah target penurunan emisi'
+            ]);
+
         } catch (\Throwable $th) {
-            return response()->json(['errors' => $th->getMessage()]);
+            return response()->json([
+                'errors' => $th->getMessage()
+            ]);
         }
     }
 }

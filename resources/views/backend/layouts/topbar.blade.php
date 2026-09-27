@@ -15,9 +15,9 @@
                 </div>
 
                 <!-- item-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                    <i class="fe-settings"></i>
-                    <span>Settings</span>
+                <a href="{{route('cms.ubah-password.index')}}" class="dropdown-item notify-item">
+                    <i class="fe-edit-1"></i>
+                    <span>Ubah Password</span>
                 </a>
 
                 <div class="dropdown-divider"></div>
