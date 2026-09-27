@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'check_role' => \App\Http\Middleware\CheckRole::class,
             'jwt' => AuthenticateJwt::class,
             'api.permission' => CheckApiPermission::class,
+            'force.password.change' => \App\Http\Middleware\ForcePasswordChange::class,
         ]);
 
         $middleware->web(append: [

@@ -33,9 +33,10 @@ class UbahPasswordController extends Controller
 
         $user = Auth::user();
         $user->password = bcrypt($request->get('new-password'));
+        $user->ubah_password = '0';
         $user->save();
 
         Alert::success("success","Password Sukses Berubah!");
-        return back();
+        return redirect()->route('cms.dashboard.index');
     }
 }

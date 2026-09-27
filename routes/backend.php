@@ -23,10 +23,11 @@ use App\Http\Controllers\Backend\MasterData\JenisEmisiController;
 use App\Http\Controllers\Backend\MasterData\KategoriSampahController;
 use App\Http\Controllers\Backend\MasterData\KategoriKualitasLingkunganController;
 use App\Http\Controllers\Backend\MasterData\SektorLb3Controller;
+use App\Http\Controllers\Backend\Pengaturan\ManajemenAkunController;
 use App\Http\Controllers\Backend\Pengaturan\ApiClientController;
 use App\Http\Controllers\Backend\Pengaturan\ApiPermissionController;
 
-Route::middleware(['auth'])->prefix('cms')->group(function(){
+Route::middleware(['auth', 'force.password.change',])->prefix('cms')->group(function(){
     Route::middleware('check_role:superadmin,admin')->group(function(){
         Route::prefix('dashboard')->group(function(){
             Route::get('/', [DashboardController::class, 'index'])->name('cms.dashboard.index');
@@ -247,6 +248,16 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
         });
 
         Route::prefix('pengaturan')->group(function(){
+            Route::prefix('manajemen-akun')->group(function(){
+                Route::get('/', [ManajemenAkunController::class, 'index'])->name('cms.pengaturan.manajemen-akun.index');
+                Route::get('/datatable', [ManajemenAkunController::class, 'datatable'])->name('cms.pengaturan.manajemen-akun.datatable');
+                Route::post('/', [ManajemenAkunController::class, 'store'])->name('cms.pengaturan.manajemen-akun.store');
+                Route::post('/ubah-password', [ManajemenAkunController::class, 'ubahPassword'])->name('cms.pengaturan.manajemen-akun.ubah-password');
+                Route::get('/edit/{id}', [ManajemenAkunController::class, 'edit'])->name('cms.pengaturan.manajemen-akun.edit');
+                Route::post('/update', [ManajemenAkunController::class, 'update'])->name('cms.pengaturan.manajemen-akun.update');
+                Route::get('/destroy/{id}',[ManajemenAkunController::class, 'destroy'])->name('cms.pengaturan.manajemen-akun.destroy');
+            });
+
             Route::prefix('api-client')->group(function(){
                 Route::get('/', [ApiClientController::class, 'index'])->name('cms.pengaturan.api-client.index');
                 Route::get('/datatable', [ApiClientController::class, 'datatable'])->name('cms.pengaturan.api-client.datatable');
