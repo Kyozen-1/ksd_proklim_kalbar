@@ -14,6 +14,8 @@ use App\Http\Controllers\Backend\SampahController;
 use App\Http\Controllers\Backend\TargetPenurunanEmisiController;
 use App\Http\Controllers\Backend\EmisiController;
 use App\Http\Controllers\Backend\ProklimController;
+use App\Http\Controllers\Backend\SerapanKarbonProklimController;
+use App\Http\Controllers\Backend\ReduksiEmisiProklimController;
 use App\Http\Controllers\Backend\UbahPasswordController;
 use App\Http\Controllers\Backend\MasterData\JabatanController;
 use App\Http\Controllers\Backend\MasterData\SectionLandingPageController;
@@ -150,6 +152,22 @@ Route::middleware(['auth', 'force.password.change',])->prefix('cms')->group(func
             Route::post('/update', [ProklimController::class, 'update'])->name('cms.proklim.update');
             Route::get('/edit/{id}', [ProklimController::class, 'edit'])->name('cms.proklim.edit');
             Route::get('/destroy/{id}',[ProklimController::class, 'destroy'])->name('cms.proklim.destroy');
+        });
+
+        Route::prefix('serapan-karbon-proklim')->group(function(){
+            Route::get('/', [SerapanKarbonProklimController::class, 'index'])->name('cms.serapan-karbon-proklim.index');
+            Route::get('/datatable', [SerapanKarbonProklimController::class, 'datatable'])->name('cms.serapan-karbon-proklim.datatable');
+            Route::post('/', [SerapanKarbonProklimController::class, 'store'])->name('cms.serapan-karbon-proklim.store');
+            Route::get('/datatable', [SerapanKarbonProklimController::class, 'datatable'])->name('cms.serapan-karbon-proklim.datatable');
+            Route::post('/update', [SerapanKarbonProklimController::class, 'update'])->name('cms.serapan-karbon-proklim.update');
+        });
+
+        Route::prefix('reduksi-emisi-proklim')->group(function(){
+            Route::get('/', [ReduksiEmisiProklimController::class, 'index'])->name('cms.reduksi-emisi-proklim.index');
+            Route::get('/datatable', [ReduksiEmisiProklimController::class, 'datatable'])->name('cms.reduksi-emisi-proklim.datatable');
+            Route::post('/', [ReduksiEmisiProklimController::class, 'store'])->name('cms.reduksi-emisi-proklim.store');
+            Route::get('/datatable', [ReduksiEmisiProklimController::class, 'datatable'])->name('cms.reduksi-emisi-proklim.datatable');
+            Route::post('/update', [ReduksiEmisiProklimController::class, 'update'])->name('cms.reduksi-emisi-proklim.update');
         });
     });
 
