@@ -44,6 +44,7 @@ class JumlahPendudukController extends Controller
             $data[] = [
                 'id' => Crypt::encryptString($d->id),
                 'kabupaten_kota_id' => $d->kabupaten_kota->name,
+                'tahun' => $d->tahun,
                 'nilai' => $d->nilai
             ];
         }
@@ -77,6 +78,7 @@ class JumlahPendudukController extends Controller
     {
         $errors = Validator::make($request->all(), [
             'kabupaten_kota_id' => 'required',
+            'tahun' => 'required',
             'nilai' => 'required',
         ]);
 
@@ -85,8 +87,15 @@ class JumlahPendudukController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
         try {
-            $jumlahPenduduk = new JumlahPenduduk;
+            $cekJumlahPenduduk = JumlahPenduduk::where('tahun', $request->tahun)->first();
+            if($cekJumlahPenduduk)
+            {
+                $jumlahPenduduk = JumlahPenduduk::find($cekJumlahPenduduk->id);
+            } else {
+                $jumlahPenduduk = new JumlahPenduduk;
+            }
             $jumlahPenduduk->kabupaten_kota_id = Crypt::decryptString($request->kabupaten_kota_id);
+            $jumlahPenduduk->tahun = $request->tahun;
             $jumlahPenduduk->nilai = $request->nilai;
             $jumlahPenduduk->save();
 
@@ -105,6 +114,7 @@ class JumlahPendudukController extends Controller
         $getData = JumlahPenduduk::find($id);
         $dataSend = [
             'nilai' => (float)$getData->nilai,
+            'tahun' => $getData->tahun,
             'kabupaten_kota' => $getData->kabupaten_kota->name
         ];
 
@@ -118,13 +128,15 @@ class JumlahPendudukController extends Controller
     {
         $errors = Validator::make($request->all(), [
             'nilai' => 'required',
+            'tahun' => 'required',
             'kabupaten_kota_id' => 'required',
             'hidden_id' => 'required'
         ]);
 
-        if($errors -> fails())
-        {
-            return response()->json(['errors' => $errors->errors()->all()]);
+        if ($errors->fails()) {
+            return response()->json([
+                'errors' => $errors->errors()->all()
+            ]);
         }
 
         try {
@@ -132,13 +144,33 @@ class JumlahPendudukController extends Controller
             $kabupatenKotaId = Crypt::decryptString($request->kabupaten_kota_id);
 
             $jumlahPenduduk = JumlahPenduduk::find($id);
-            $jumlahPenduduk->kabupaten_kota_id = $kabupatenKotaId;
+
+            if (!$jumlahPenduduk) {
+                return response()->json([
+                    'errors' => ['Data jumlah penduduk tidak ditemukan']
+                ]);
+            }
+            if ($jumlahPenduduk->tahun != null &&
+                ($jumlahPenduduk->kabupaten_kota_id != $kabupatenKotaId ||
+                $jumlahPenduduk->tahun != $request->tahun)
+            ) {
+                return response()->json([
+                    'errors' => [
+                        'Kabupaten/Kota dan tahun tidak dapat diubah. Data harus sesuai dengan data yang tersimpan.'
+                    ]
+                ]);
+            }
             $jumlahPenduduk->nilai = $request->nilai;
             $jumlahPenduduk->save();
 
-            return response()->json(['success' => 'Berhasil merubah jumlah penduduk']);
+            return response()->json([
+                'success' => 'Berhasil merubah jumlah penduduk'
+            ]);
+
         } catch (\Throwable $th) {
-            return response()->json(['errors' => $th->getMessage()]);
+            return response()->json([
+                'errors' => $th->getMessage()
+            ]);
         }
     }
 }

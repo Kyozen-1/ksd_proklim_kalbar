@@ -14,6 +14,7 @@ use App\Http\Controllers\Backend\SampahController;
 use App\Http\Controllers\Backend\TargetPenurunanEmisiController;
 use App\Http\Controllers\Backend\EmisiController;
 use App\Http\Controllers\Backend\ProklimController;
+use App\Http\Controllers\Backend\UbahPasswordController;
 use App\Http\Controllers\Backend\MasterData\JabatanController;
 use App\Http\Controllers\Backend\MasterData\SectionLandingPageController;
 use App\Http\Controllers\Backend\MasterData\KategoriProklimController;
@@ -29,6 +30,11 @@ Route::middleware(['auth'])->prefix('cms')->group(function(){
     Route::middleware('check_role:superadmin,admin')->group(function(){
         Route::prefix('dashboard')->group(function(){
             Route::get('/', [DashboardController::class, 'index'])->name('cms.dashboard.index');
+        });
+
+        Route::prefix('ubah-password')->group(function(){
+            Route::get('/', [UbahPasswordController::class, 'index'])->name('cms.ubah-password.index');
+            Route::post('/', [UbahPasswordController::class, 'store'])->name('cms.ubah-password.store');
         });
 
         Route::prefix('berita')->group(function(){
