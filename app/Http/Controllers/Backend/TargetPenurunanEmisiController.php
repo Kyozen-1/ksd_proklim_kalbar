@@ -87,14 +87,16 @@ class TargetPenurunanEmisiController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
         try {
-            $cekTargetPenurunanEmisi = TargetPenurunanEmisi::where('tahun', $request->tahun)->first();
+            $kabupatenKotaId = Crypt::decryptString($request->kabupaten_kota_id);
+            $cekTargetPenurunanEmisi = TargetPenurunanEmisi::where('kabupaten_kota_id', $kabupatenKotaId)
+                                        ->where('tahun', $request->tahun)->first();
             if($cekTargetPenurunanEmisi)
             {
                 $targetPenurunanEmisi = TargetPenurunanEmisi::find($cekTargetPenurunanEmisi->id);
             } else {
                 $targetPenurunanEmisi = new TargetPenurunanEmisi;
             }
-            $targetPenurunanEmisi->kabupaten_kota_id = Crypt::decryptString($request->kabupaten_kota_id);
+            $targetPenurunanEmisi->kabupaten_kota_id = $kabupatenKotaId;
             $targetPenurunanEmisi->nilai = $request->nilai;
             $targetPenurunanEmisi->save();
 
