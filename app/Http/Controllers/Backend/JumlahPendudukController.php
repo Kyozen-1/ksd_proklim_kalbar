@@ -10,6 +10,7 @@ use Validator;
 use DataTables;
 use App\Models\JumlahPenduduk;
 use App\Models\Regency;
+use App\Services\PublicDashboardCache;
 
 class JumlahPendudukController extends Controller
 {
@@ -87,17 +88,15 @@ class JumlahPendudukController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
         try {
-            $cekJumlahPenduduk = JumlahPenduduk::where('tahun', $request->tahun)->first();
-            if($cekJumlahPenduduk)
-            {
-                $jumlahPenduduk = JumlahPenduduk::find($cekJumlahPenduduk->id);
-            } else {
-                $jumlahPenduduk = new JumlahPenduduk;
-            }
-            $jumlahPenduduk->kabupaten_kota_id = Crypt::decryptString($request->kabupaten_kota_id);
+            $kabupatenKotaId = Crypt::decryptString($request->kabupaten_kota_id);
+            $jumlahPenduduk = JumlahPenduduk::where('kabupaten_kota_id', $kabupatenKotaId)
+                ->where('tahun', $request->tahun)
+                ->first() ?? new JumlahPenduduk;
+            $jumlahPenduduk->kabupaten_kota_id = $kabupatenKotaId;
             $jumlahPenduduk->tahun = $request->tahun;
             $jumlahPenduduk->nilai = $request->nilai;
             $jumlahPenduduk->save();
+            PublicDashboardCache::invalidate('sampah');
 
             return response()->json(['success' => 'Berhasil menambahkan jumlah penduduk']);
         } catch (\Throwable $th) {
@@ -160,8 +159,11 @@ class JumlahPendudukController extends Controller
                     ]
                 ]);
             }
+            $jumlahPenduduk->kabupaten_kota_id = $kabupatenKotaId;
+            $jumlahPenduduk->tahun = $request->tahun;
             $jumlahPenduduk->nilai = $request->nilai;
             $jumlahPenduduk->save();
+            PublicDashboardCache::invalidate('sampah');
 
             return response()->json([
                 'success' => 'Berhasil merubah jumlah penduduk'

@@ -12,14 +12,14 @@ class IgrkDashboardService
 
     public function dashboard(int $year): array
     {
-        return Cache::remember("public:igrk:dashboard:{$year}", self::CACHE_TTL_SECONDS, fn () => [
+        return Cache::remember(PublicDashboardCache::key('igrk', "dashboard:{$year}"), self::CACHE_TTL_SECONDS, fn () => [
             'regions' => $this->regionHeaders($year),
         ]);
     }
 
     public function availableYears(): array
     {
-        return Cache::remember('public:igrk:years', self::CACHE_TTL_SECONDS, function () {
+        return Cache::remember(PublicDashboardCache::key('igrk', 'years'), self::CACHE_TTL_SECONDS, function () {
             return collect([now()->year])
                 ->merge(DB::table('data_emisis')->whereNotNull('tahun')->distinct()->pluck('tahun'))
                 ->merge(DB::table('target_penurunan_emisis')->whereNotNull('tahun')->distinct()->pluck('tahun'))
@@ -35,21 +35,18 @@ class IgrkDashboardService
     public function regionDetail(Regency $regency, int $year): array
     {
         return Cache::remember(
-            "public:igrk:region:{$regency->id}:{$year}",
+            PublicDashboardCache::key('igrk', "region:{$regency->id}:{$year}"),
             self::CACHE_TTL_SECONDS,
             function () use ($regency, $year) {
                 $rows = DB::table('md_sektor_utama_emisis as sectors')
                     ->leftJoin('md_jenis_emisis as types', function ($join) {
-                        $join->on('types.sektor_utama_emisi_id', '=', 'sectors.id')
-                            ->where('types.status_aktif', '=', '1');
+                        $join->on('types.sektor_utama_emisi_id', '=', 'sectors.id');
                     })
                     ->leftJoin('data_emisis as emissions', function ($join) use ($regency, $year) {
                         $join->on('emissions.jenis_emisi_id', '=', 'types.id')
                             ->where('emissions.kabupaten_kota_id', '=', $regency->id)
-                            ->where('emissions.status_aktif', '=', '1')
                             ->where('emissions.tahun', '<=', $year);
                     })
-                    ->where('sectors.status_aktif', '1')
                     ->select(
                         'sectors.id as sector_id',
                         'sectors.nama as sector_name',
@@ -174,7 +171,6 @@ class IgrkDashboardService
         return DB::table('regencies')
             ->leftJoin('data_emisis', function ($join) use ($year) {
                 $join->on('data_emisis.kabupaten_kota_id', '=', 'regencies.id')
-                    ->where('data_emisis.status_aktif', '=', '1')
                     ->where('data_emisis.tahun', '<=', $year);
             })
             ->select('regencies.id', 'regencies.name', DB::raw('COUNT(data_emisis.id) as data_count'))

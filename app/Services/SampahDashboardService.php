@@ -12,14 +12,14 @@ class SampahDashboardService
 
     public function dashboard(int $year): array
     {
-        return Cache::remember("public:sampah:dashboard:{$year}", self::CACHE_TTL_SECONDS, fn () => [
+        return Cache::remember(PublicDashboardCache::key('sampah', "dashboard:{$year}"), self::CACHE_TTL_SECONDS, fn () => [
             'regions' => $this->regionHeaders($year),
         ]);
     }
 
     public function availableYears(): array
     {
-        return Cache::remember('public:sampah:years', self::CACHE_TTL_SECONDS, function () {
+        return Cache::remember(PublicDashboardCache::key('sampah', 'years'), self::CACHE_TTL_SECONDS, function () {
             return collect([now()->year])
                 ->merge(DB::table('data_sampahs')->whereNotNull('tahun')->distinct()->pluck('tahun'))
                 ->merge(DB::table('jumlah_penduduks')->whereNotNull('tahun')->distinct()->pluck('tahun'))
@@ -35,7 +35,7 @@ class SampahDashboardService
     public function regionDetail(Regency $regency, int $year, int $fromYear, int $toYear): array
     {
         return Cache::remember(
-            "public:sampah:region:{$regency->id}:{$year}:{$fromYear}:{$toYear}",
+            PublicDashboardCache::key('sampah', "region:{$regency->id}:{$year}:{$fromYear}:{$toYear}"),
             self::CACHE_TTL_SECONDS,
             function () use ($regency, $year, $fromYear, $toYear) {
                 $previousYear = $year - 1;
@@ -43,10 +43,8 @@ class SampahDashboardService
                     ->leftJoin('data_sampahs as waste', function ($join) use ($regency, $year, $previousYear) {
                         $join->on('waste.kategori_sampah_id', '=', 'categories.id')
                             ->where('waste.kabupaten_kota_id', '=', $regency->id)
-                            ->where('waste.status_aktif', '=', '1')
                             ->whereIn('waste.tahun', [$year, $previousYear]);
                     })
-                    ->where('categories.status_aktif', '1')
                     ->select('categories.nama')
                     ->selectRaw('MIN(categories.id) as id')
                     ->selectRaw(
@@ -76,7 +74,6 @@ class SampahDashboardService
 
                 $trendTotals = DB::table('data_sampahs')
                     ->where('kabupaten_kota_id', $regency->id)
-                    ->where('status_aktif', '1')
                     ->whereBetween('tahun', [$fromYear, $toYear])
                     ->select('tahun')
                     ->selectRaw('COALESCE(SUM(nilai), 0) as total')
@@ -127,7 +124,6 @@ class SampahDashboardService
         return DB::table('regencies')
             ->leftJoin('data_sampahs', function ($join) use ($year) {
                 $join->on('data_sampahs.kabupaten_kota_id', '=', 'regencies.id')
-                    ->where('data_sampahs.status_aktif', '=', '1')
                     ->where('data_sampahs.tahun', '=', $year);
             })
             ->select('regencies.id', 'regencies.name', DB::raw('COUNT(data_sampahs.id) as data_count'))

@@ -13,15 +13,17 @@ use App\Models\MapLocation;
 use App\Models\PivotGambarBerita;
 use App\Models\PivotGambarKegiatan;
 use App\Models\Regency;
-use App\Models\Village;
-use App\Services\ProklimDashboardService;
 use App\Services\IgrkDashboardService;
 use App\Services\KualitasLingkunganDashboardService;
+use App\Services\LandingDashboardStatsService;
 use App\Services\Lb3DashboardService;
 use App\Services\MapDashboardService;
+use App\Services\ProklimDashboardService;
 use App\Services\SampahDashboardService;
+use App\Services\VisitorCounterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
@@ -30,48 +32,84 @@ class HomeController extends Controller
     /**
      * Display the public homepage.
      */
-    public function index()
-    {
-        $landingMetrics = $this->landingMetrics();
+    public function index(
+        Request $request,
+        VisitorCounterService $visitorCounter,
+        LandingDashboardStatsService $landingStatsService
+    ) {
+        $visitorStats = $visitorCounter->record($request);
         $landingSections = $this->landingSections();
-        $homeHero = $this->firstLandingContent($landingSections, ['home_hero', 'hero', 'slider', 'beranda_hero']);
+        $landingMetrics = $this->landingMetrics($landingSections);
+        $homeSlides = $this->landingContents($landingSections, ['home_hero', 'hero', 'slider', 'beranda_hero']);
+        $homeStats = $this->firstLandingContent($landingSections, ['home_statistik', 'home_stats', 'statistik', 'capaian_kolektif']);
+        $homeStatItems = $this->landingContents($landingSections, ['home_stat_item', 'home_statistik_item', 'statistik_item', 'capaian_item']);
         $homeFunction = $this->firstLandingContent($landingSections, ['home_tugas_fungsi', 'tugas_fungsi', 'pslb3pp_tugas_fungsi']);
+        $homeFunctionItems = $this->landingContents($landingSections, ['home_fungsi_item', 'fungsi_bidang_pslb3pp', 'fungsi_item']);
+        $homeNews = $this->firstLandingContent($landingSections, ['home_berita', 'berita_terkini', 'kabar_berita']);
         $homeIspu = $this->firstLandingContent($landingSections, ['home_ispu', 'ispu', 'akses_data']);
         $homeRegulation = $this->firstLandingContent($landingSections, ['home_regulasi', 'regulasi_banner', 'akses_data_terbuka']);
         $homeOfficial = $this->firstLandingContent($landingSections, ['home_dlhk', 'dlhk_website', 'website_resmi']);
         $homeVisitor = $this->firstLandingContent($landingSections, ['home_visitor', 'visitor_counter', 'kunjungi_website']);
-        $kampungIklimCount = Village::count();
+        $statsYear = now()->year;
+        $operationalStats = $landingStatsService->summary($statsYear);
 
-        $stats = [
+        $defaultStats = [
             [
                 'label' => 'Kampung Iklim Aktif',
-                'value' => $this->displayMetric($kampungIklimCount),
+                'value' => $this->displayMetric($operationalStats['proklim']['total']),
                 'unit' => '',
-                'meta' => '2026: '.$this->displayMetric($this->metricValue($landingMetrics, ['kampung_iklim_2026', 'kampung_iklim_tahun_ini', 'lokasi_2026'], 0)).' Titik',
+                'meta' => $statsYear.': '.$this->displayMetric($operationalStats['proklim']['year_total']).' Titik',
                 'icon' => 'fa-house',
             ],
             [
                 'label' => 'Reduksi Gas Emisi',
-                'value' => $this->displayMetric($this->metricValue($landingMetrics, ['reduksi_gas_emisi', 'penurunan_emisi'], 0)),
+                'value' => $this->displayMetric($operationalStats['emission_reduction']['total']),
                 'unit' => 'tCO2e/th',
-                'meta' => '2026: '.$this->displayMetric($this->metricValue($landingMetrics, ['reduksi_gas_emisi_2026', 'penurunan_emisi_2026'], 0)).' tCO2e',
+                'meta' => $statsYear.': '.$this->displayMetric($operationalStats['emission_reduction']['year_total']).' tCO2e',
                 'icon' => 'fa-wind',
             ],
             [
                 'label' => 'Total Emisi',
-                'value' => $this->displayMetric($this->metricValue($landingMetrics, ['total_emisi', 'emisi'], 0)),
+                'value' => $this->displayMetric($operationalStats['emission']['total']),
                 'unit' => 'tCO2e/th',
-                'meta' => '2026: '.$this->displayMetric($this->metricValue($landingMetrics, ['total_emisi_2026', 'emisi_2026'], 0)).' tCO2e',
+                'meta' => $statsYear.': '.$this->displayMetric($operationalStats['emission']['year_total']).' tCO2e',
                 'icon' => 'fa-wind',
             ],
             [
                 'label' => 'Total TPS Aktif',
                 'value' => $this->displayMetric($this->metricValue($landingMetrics, ['total_tps_aktif', 'tps_aktif', 'total_tps'], 0)),
                 'unit' => 'Unit',
-                'meta' => '2026: '.$this->displayMetric($this->metricValue($landingMetrics, ['total_tps_aktif_2026', 'tps_aktif_2026', 'total_tps_2026'], 0)).' Unit',
+                'meta' => $statsYear.': '.$this->displayMetric($this->metricValue($landingMetrics, ['total_tps_aktif_'.$statsYear, 'tps_aktif_'.$statsYear, 'total_tps_'.$statsYear], 0)).' Unit',
                 'icon' => 'fa-trash-can',
             ],
         ];
+
+        $operationalStatsByLabel = collect($defaultStats)
+            ->take(3)
+            ->keyBy(fn (array $item) => $this->normalizeLandingKey($item['label']));
+
+        $stats = $homeStatItems->isNotEmpty()
+            ? $homeStatItems->map(function (array $item) use ($operationalStatsByLabel) {
+                $stat = [
+                    'label' => $item['label'] ?? $item['title'] ?? 'Statistik',
+                    'value' => $this->displayMetric($item['value'] ?? 0),
+                    'unit' => $item['unit'] ?? '',
+                    'meta' => $item['meta'] ?? $item['subtitle'] ?? '',
+                    'icon' => $item['icon'] ?? 'fa-chart-simple',
+                ];
+
+                $operationalStat = $operationalStatsByLabel->get(
+                    $this->normalizeLandingKey($stat['label'])
+                );
+
+                if ($operationalStat) {
+                    $stat['value'] = $operationalStat['value'];
+                    $stat['meta'] = $operationalStat['meta'];
+                }
+
+                return $stat;
+            })->all()
+            : $defaultStats;
 
         $latestNews = $this->newsQuery()
             ->take(3)
@@ -80,12 +118,16 @@ class HomeController extends Controller
         return view('frontend.pages.home', compact(
             'stats',
             'latestNews',
-            'homeHero',
+            'homeSlides',
+            'homeStats',
             'homeFunction',
+            'homeFunctionItems',
+            'homeNews',
             'homeIspu',
             'homeRegulation',
             'homeOfficial',
-            'homeVisitor'
+            'homeVisitor',
+            'visitorStats'
         ));
     }
 
@@ -265,7 +307,7 @@ class HomeController extends Controller
             'limit' => ['nullable', 'integer', 'min:1', 'max:500'],
         ]);
 
-        if (!empty($validated['bounds'])) {
+        if (! empty($validated['bounds'])) {
             $bounds = array_map('floatval', explode(',', $validated['bounds']));
             if (count($bounds) !== 4 || $bounds[0] >= $bounds[2] || $bounds[1] >= $bounds[3]) {
                 throw ValidationException::withMessages(['bounds' => 'Batas peta tidak valid.']);
@@ -385,7 +427,7 @@ class HomeController extends Controller
     {
         $gambar = PivotGambarBerita::findOrFail($id);
 
-        if (!$gambar->image_path || !Storage::disk('minio')->exists($gambar->image_path)) {
+        if (! $gambar->image_path || ! Storage::disk('minio')->exists($gambar->image_path)) {
             abort(404);
         }
 
@@ -396,7 +438,7 @@ class HomeController extends Controller
     {
         $gambar = PivotGambarKegiatan::findOrFail($id);
 
-        if (!$gambar->image_path || !Storage::disk('minio')->exists($gambar->image_path)) {
+        if (! $gambar->image_path || ! Storage::disk('minio')->exists($gambar->image_path)) {
             abort(404);
         }
 
@@ -407,7 +449,7 @@ class HomeController extends Controller
     {
         $dokumen = Dokumen::statusAktif()->findOrFail($id);
 
-        if (!$dokumen->path || !Storage::disk('minio')->exists($dokumen->path)) {
+        if (! $dokumen->path || ! Storage::disk('minio')->exists($dokumen->path)) {
             abort(404);
         }
 
@@ -418,7 +460,7 @@ class HomeController extends Controller
     {
         $anggota = AnggotaPelaksana::findOrFail($id);
 
-        if (!$anggota->foto || !Storage::disk('minio')->exists($anggota->foto)) {
+        if (! $anggota->foto || ! Storage::disk('minio')->exists($anggota->foto)) {
             abort(404);
         }
 
@@ -427,10 +469,12 @@ class HomeController extends Controller
 
     public function landingImage($id, string $field = 'image')
     {
-        $section = LandingPageSection::statusAktif()->findOrFail($id);
+        $section = LandingPageSection::statusAktif()
+            ->whereHas('section', fn ($query) => $query->statusAktif())
+            ->findOrFail($id);
         $path = $section->content[$field] ?? null;
 
-        if (!$path || !Storage::disk('minio')->exists($path)) {
+        if (! $path || ! Storage::disk('minio')->exists($path)) {
             abort(404);
         }
 
@@ -452,9 +496,9 @@ class HomeController extends Controller
             ->latest();
     }
 
-    private function landingMetrics(): array
+    private function landingMetrics(Collection $sections): array
     {
-        return $this->landingSections()
+        return $sections
             ->pluck('content')
             ->filter()
             ->reduce(function (array $metrics, array $content) {
@@ -468,11 +512,13 @@ class HomeController extends Controller
             }, []);
     }
 
-    private function landingSections()
+    private function landingSections(): Collection
     {
         return LandingPageSection::with('section')
             ->statusAktif()
+            ->whereHas('section', fn ($query) => $query->statusAktif())
             ->orderBy('sort_order')
+            ->orderBy('id')
             ->get()
             ->map(function (LandingPageSection $landingSection) {
                 $landingSection->lookup_keys = collect([
@@ -489,28 +535,32 @@ class HomeController extends Controller
             });
     }
 
-    private function firstLandingContent($sections, array $keys): array
+    private function firstLandingContent(Collection $sections, array $keys): array
+    {
+        return $this->landingContents($sections, $keys)->first() ?? [];
+    }
+
+    private function landingContents(Collection $sections, array $keys): Collection
     {
         $normalizedKeys = collect($keys)
             ->map(fn ($key) => $this->normalizeLandingKey($key))
             ->all();
 
-        $section = $sections->first(function (LandingPageSection $section) use ($normalizedKeys) {
-            return (bool) array_intersect($section->lookup_keys ?? [], $normalizedKeys);
-        });
+        return $sections
+            ->filter(function (LandingPageSection $section) use ($normalizedKeys) {
+                return (bool) array_intersect($section->lookup_keys ?? [], $normalizedKeys);
+            })
+            ->map(function (LandingPageSection $section) {
+                $content = $section->content ?? [];
+                $content['_id'] = $section->id;
 
-        if (!$section) {
-            return [];
-        }
+                if (! empty($content['image'])) {
+                    $content['image_url'] = route('frontend.landing.image', ['id' => $section->id, 'field' => 'image']);
+                }
 
-        $content = $section->content ?? [];
-        $content['_id'] = $section->id;
-
-        if (!empty($content['image'])) {
-            $content['image_url'] = route('frontend.landing.image', ['id' => $section->id, 'field' => 'image']);
-        }
-
-        return $content;
+                return $content;
+            })
+            ->values();
     }
 
     private function normalizeLandingKey(?string $key): string

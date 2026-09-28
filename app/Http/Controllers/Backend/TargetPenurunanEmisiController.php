@@ -10,6 +10,7 @@ use Validator;
 use DataTables;
 use App\Models\TargetPenurunanEmisi;
 use App\Models\Regency;
+use App\Services\PublicDashboardCache;
 
 class TargetPenurunanEmisiController extends Controller
 {
@@ -87,18 +88,17 @@ class TargetPenurunanEmisiController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
         try {
-            $cekTargetPenurunanEmisi = TargetPenurunanEmisi::where('tahun', $request->tahun)->first();
-            if($cekTargetPenurunanEmisi)
-            {
-                $targetPenurunanEmisi = TargetPenurunanEmisi::find($cekTargetPenurunanEmisi->id);
-            } else {
-                $targetPenurunanEmisi = new TargetPenurunanEmisi;
-            }
-            $targetPenurunanEmisi->kabupaten_kota_id = Crypt::decryptString($request->kabupaten_kota_id);
+            $kabupatenKotaId = Crypt::decryptString($request->kabupaten_kota_id);
+            $targetPenurunanEmisi = TargetPenurunanEmisi::where('kabupaten_kota_id', $kabupatenKotaId)
+                ->where('tahun', $request->tahun)
+                ->first() ?? new TargetPenurunanEmisi;
+            $targetPenurunanEmisi->kabupaten_kota_id = $kabupatenKotaId;
+            $targetPenurunanEmisi->tahun = $request->tahun;
             $targetPenurunanEmisi->nilai = $request->nilai;
             $targetPenurunanEmisi->save();
+            PublicDashboardCache::invalidate('igrk');
 
-            return response()->json(['success' => 'Berhasil menambahkan jumlah penduduk']);
+            return response()->json(['success' => 'Berhasil menyimpan target penurunan emisi']);
         } catch (\Throwable $th) {
             return response()->json(['errors' => $th->getMessage()]);
         }
@@ -158,11 +158,12 @@ class TargetPenurunanEmisiController extends Controller
                         'Kabupaten/Kota dan tahun tidak dapat diubah. Data harus sesuai dengan data yang tersimpan.'
                     ]
                 ]);
-            } else {
-                $targetPenurunanEmisi->tahun = $request->tahun;
             }
+            $targetPenurunanEmisi->kabupaten_kota_id = $kabupatenKotaId;
+            $targetPenurunanEmisi->tahun = $request->tahun;
             $targetPenurunanEmisi->nilai = $request->nilai;
             $targetPenurunanEmisi->save();
+            PublicDashboardCache::invalidate('igrk');
 
             return response()->json([
                 'success' => 'Berhasil merubah target penurunan emisi'
