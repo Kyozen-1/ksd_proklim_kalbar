@@ -10,6 +10,7 @@ use Validator;
 use DataTables;
 use App\Models\TargetPenurunanEmisi;
 use App\Models\Regency;
+use App\Services\PublicDashboardCache;
 
 class TargetPenurunanEmisiController extends Controller
 {
@@ -99,8 +100,9 @@ class TargetPenurunanEmisiController extends Controller
             $targetPenurunanEmisi->kabupaten_kota_id = $kabupatenKotaId;
             $targetPenurunanEmisi->nilai = $request->nilai;
             $targetPenurunanEmisi->save();
+            PublicDashboardCache::invalidate('igrk');
 
-            return response()->json(['success' => 'Berhasil menambahkan jumlah penduduk']);
+            return response()->json(['success' => 'Berhasil menyimpan target penurunan emisi']);
         } catch (\Throwable $th) {
             return response()->json(['errors' => $th->getMessage()]);
         }
@@ -160,11 +162,12 @@ class TargetPenurunanEmisiController extends Controller
                         'Kabupaten/Kota dan tahun tidak dapat diubah. Data harus sesuai dengan data yang tersimpan.'
                     ]
                 ]);
-            } else {
-                $targetPenurunanEmisi->tahun = $request->tahun;
             }
+            $targetPenurunanEmisi->kabupaten_kota_id = $kabupatenKotaId;
+            $targetPenurunanEmisi->tahun = $request->tahun;
             $targetPenurunanEmisi->nilai = $request->nilai;
             $targetPenurunanEmisi->save();
+            PublicDashboardCache::invalidate('igrk');
 
             return response()->json([
                 'success' => 'Berhasil merubah target penurunan emisi'

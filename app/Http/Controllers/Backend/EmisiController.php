@@ -14,6 +14,7 @@ use App\Models\Regency;
 use App\Models\MdSektorUtamaEmisi;
 use App\Models\MdJenisEmisi;
 use App\Models\DataEmisi;
+use App\Services\PublicDashboardCache;
 
 class EmisiController extends Controller
 {
@@ -241,14 +242,15 @@ class EmisiController extends Controller
                     $emisi->kabupaten_kota_id = $kabupatenKotaId;
                     $emisi->jenis_emisi_id = $jenisEmisiId;
                     $emisi->tahun = $tahun;
-                    $emisi->status_aktif = 1;
                 }
                 $emisi->nilai = $request->nilai[$index];
                 $emisi->tanggal_pendataan = $request->tanggal_pendataan[$index];
+                $emisi->status_aktif = '1';
                 $emisi->save();
             }
 
             DB::commit();
+            PublicDashboardCache::invalidate('igrk');
 
             return response()->json([
                 'success' => 'Berhasil menyimpan data emisi.'
@@ -310,7 +312,9 @@ class EmisiController extends Controller
 
             $emisi->nilai = $request->nilai;
             $emisi->tanggal_pendataan = $request->tanggal_pendataan;
+            $emisi->status_aktif = '1';
             $emisi->save();
+            PublicDashboardCache::invalidate('igrk');
             return response()->json([
                 'success' => 'Berhasil mengubah emisi.'
             ]);

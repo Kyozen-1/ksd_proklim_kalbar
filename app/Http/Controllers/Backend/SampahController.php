@@ -13,6 +13,7 @@ use DataTables;
 use App\Models\Regency;
 use App\Models\MdKategoriSampah;
 use App\Models\DataSampah;
+use App\Services\PublicDashboardCache;
 
 class SampahController extends Controller
 {
@@ -223,9 +224,11 @@ class SampahController extends Controller
                 $sampah->nilai = $request->nilai[$index];
                 $sampah->sampah_terkelola = $request->sampah_terkelola[$index];
                 $sampah->tanggal_pendataan = $request->tanggal_pendataan[$index];
+                $sampah->status_aktif = '1';
                 $sampah->save();
             }
             DB::commit();
+            PublicDashboardCache::invalidate('sampah');
             return response()->json([
                 'success' => 'Berhasil menyimpan data sampah.'
             ]);
@@ -286,7 +289,9 @@ class SampahController extends Controller
             $sampah->nilai = $request->nilai;
             $sampah->sampah_terkelola = $request->sampah_terkelola;
             $sampah->tanggal_pendataan = $request->tanggal_pendataan;
+            $sampah->status_aktif = '1';
             $sampah->save();
+            PublicDashboardCache::invalidate('sampah');
 
             return response()->json([
                 'success' => 'Berhasil mengubah sampah.'

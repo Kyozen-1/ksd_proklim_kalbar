@@ -10,6 +10,7 @@ use Validator;
 use DataTables;
 use App\Models\JumlahPenduduk;
 use App\Models\Regency;
+use App\Services\PublicDashboardCache;
 
 class JumlahPendudukController extends Controller
 {
@@ -100,6 +101,7 @@ class JumlahPendudukController extends Controller
             $jumlahPenduduk->tahun = $request->tahun;
             $jumlahPenduduk->nilai = $request->nilai;
             $jumlahPenduduk->save();
+            PublicDashboardCache::invalidate('sampah');
 
             return response()->json(['success' => 'Berhasil menambahkan jumlah penduduk']);
         } catch (\Throwable $th) {
@@ -164,8 +166,11 @@ class JumlahPendudukController extends Controller
             } else {
                 $jumlahPenduduk->tahun = $request->tahun;
             }
+            $jumlahPenduduk->kabupaten_kota_id = $kabupatenKotaId;
+            $jumlahPenduduk->tahun = $request->tahun;
             $jumlahPenduduk->nilai = $request->nilai;
             $jumlahPenduduk->save();
+            PublicDashboardCache::invalidate('sampah');
 
             return response()->json([
                 'success' => 'Berhasil merubah jumlah penduduk'

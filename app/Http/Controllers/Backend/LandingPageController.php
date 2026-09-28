@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
-use RealRashid\SweetAlert\Facades\Alert;
-use Intervention\Image\Laravel\Facades\Image;
-use Illuminate\Support\Facades\Storage;
 use App\Contracts\FileStorageInterface;
-use Carbon\Carbon;
-use Auth;
-use DataTables;
+use App\Http\Controllers\Controller;
 use App\Models\LandingPageSection;
 use App\Models\MdSectionLandingPage;
+use Auth;
+use DataTables;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Intervention\Image\Laravel\Facades\Image;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class LandingPageController extends Controller
 {
@@ -25,13 +25,14 @@ class LandingPageController extends Controller
     public function mdSectionLandingPage()
     {
         $getData = MdSectionLandingPage::statusAktif()
-                ->get()
-                ->map(function($d){
-                    return [
-                        'id' => Crypt::encryptString($d->id),
-                        'nama' => $d->nama
-                    ];
-                });
+            ->get()
+            ->map(function ($d) {
+                return [
+                    'id' => Crypt::encryptString($d->id),
+                    'nama' => $d->nama,
+                ];
+            });
+
         return $getData;
     }
 
@@ -40,46 +41,49 @@ class LandingPageController extends Controller
         $data = new LandingPageSection;
         $data = $data->statusAktif();
         $data = $data->get();
+
         return DataTables::of($data)
             ->addIndexColumn()
-            ->addColumn('aksi', function($data){
+            ->addColumn('aksi', function ($data) {
                 $id = Crypt::encryptString($data->id);
                 $button_edit = '<a href="'.route('cms.landing-page.edit', ['id' => $id]).'"
                 class="edit btn btn-icon waves-effect btn-warning" title="Edit Data"><i class="fas fa-edit"></i></a>';
                 $button_delete = '<button type="button" name="delete" id="'.$id.'" class="delete btn btn-icon waves-effect btn-danger" title="Delete Data"><i class="fas fa-trash"></i></button>';
-                $button = $button_edit . ' ' . $button_delete;
+                $button = $button_edit.' '.$button_delete;
+
                 return $button;
             })
-            ->editColumn('section_id', function($data){
+            ->editColumn('section_id', function ($data) {
                 return $data->section?->nama;
             })
-            ->editColumn('content', function($data){
+            ->editColumn('content', function ($data) {
                 $html = '<ul>';
-                    foreach ($data->content as $key => $value) {
-                        if($key == 'image')
-                        {
-                            $url = route('cms.landing-page.gambar', [
-                                'path' => Crypt::encryptString($value)
-                            ]);
+                foreach ($data->content as $key => $value) {
+                    if ($key == 'image') {
+                        $url = route('cms.landing-page.gambar', [
+                            'path' => Crypt::encryptString($value),
+                        ]);
 
-                            $html .= '<li><img src="'.$url.'" alt="" style="width: 5rem;"></li>';
-                        } else {
-                            $html .= '<li>'.$key.' =  '.$value.'</li>';
-                        }
+                        $html .= '<li><img src="'.$url.'" alt="" style="width: 5rem;"></li>';
+                    } else {
+                        $html .= '<li>'.$key.' =  '.$value.'</li>';
                     }
-                $html .='</ul>';
+                }
+                $html .= '</ul>';
+
                 return $html;
             })
             ->rawColumns(['aksi', 'content'])
-        ->make(true);
+            ->make(true);
     }
 
     public function create()
     {
         $availableFields = config('landing_fields');
+
         return view('backend.landing-page.create', [
             'sections' => $this->mdSectionLandingPage(),
-            'availableFields' => $availableFields
+            'availableFields' => $availableFields,
         ]);
     }
 
@@ -87,7 +91,7 @@ class LandingPageController extends Controller
     {
         $request->validate([
             'sort_order' => 'required',
-            'section_id' => 'required'
+            'section_id' => 'required',
         ]);
 
         try {
@@ -95,8 +99,7 @@ class LandingPageController extends Controller
             if ($request->has('fields')) {
                 foreach ($request->fields as $key => $value) {
                     if ($value !== null && $value !== '') {
-                        if($key == 'image')
-                        {
+                        if ($key == 'image') {
                             $destinationPath = 'landing-page/images';
 
                             $path = $storage->upload(
@@ -111,19 +114,26 @@ class LandingPageController extends Controller
                 }
             }
             $sectionId = Crypt::decryptString($request->section_id);
-            $count = LandingPageSection::where('section_id', $sectionId)->count();
-            $sectionKey = ($count + 1);
+            $sectionName = MdSectionLandingPage::findOrFail($sectionId)->nama ?: 'landing-section';
+            $sectionKeyBase = Str::slug($sectionName, '_') ?: 'landing_section';
+            $sequence = LandingPageSection::where('section_id', $sectionId)->count() + 1;
+
+            do {
+                $sectionKey = $sectionKeyBase.'_'.$sequence;
+                $sequence++;
+            } while (LandingPageSection::where('section_key', $sectionKey)->exists());
 
             $landingPageSection = new LandingPageSection;
             $landingPageSection->user_id = Auth::user()->id;
             $landingPageSection->section_key = $sectionKey;
             $landingPageSection->section_id = $sectionId;
             $landingPageSection->sort_order = $request->sort_order;
-            $landingPageSection->content =  $content;
+            $landingPageSection->content = $content;
             $landingPageSection->status_aktif = '1';
             $landingPageSection->save();
 
             Alert::success('Berhasil', 'Landing Page berhasil disimpan');
+
             return redirect()->route('cms.landing-page.index');
         } catch (\Throwable $th) {
             return back()->with('failed', $th->getMessage());
@@ -135,11 +145,12 @@ class LandingPageController extends Controller
         $id = Crypt::decryptString($id);
         $availableFields = config('landing_fields');
         $landingPageSection = LandingPageSection::find($id);
+
         return view('backend.landing-page.edit', [
             'id' => Crypt::encryptString($id),
             'sections' => $this->mdSectionLandingPage(),
             'availableFields' => $availableFields,
-            'landingPageSection' => $landingPageSection
+            'landingPageSection' => $landingPageSection,
         ]);
     }
 
@@ -147,7 +158,7 @@ class LandingPageController extends Controller
     {
         $request->validate([
             'sort_order' => 'required',
-            'section_id' => 'required'
+            'section_id' => 'required',
         ]);
 
         try {
@@ -193,12 +204,12 @@ class LandingPageController extends Controller
                             | Hapus image lama
                             |--------------------------------------------------------------------------
                             */
-                            if ($oldImage && Storage::disk('minio')->exists($oldImage))
-                            {
+                            if ($oldImage && Storage::disk('minio')->exists($oldImage)) {
                                 $storage->delete(
                                     $oldImage
                                 );
                             }
+
                             continue;
                         }
 
@@ -210,6 +221,7 @@ class LandingPageController extends Controller
                         if ($oldImage) {
                             $content['image'] = $oldImage;
                         }
+
                         continue;
                     }
                     /*
@@ -296,7 +308,7 @@ class LandingPageController extends Controller
 
             $disk = Storage::disk('minio');
 
-            if (!$disk->exists($path)) {
+            if (! $disk->exists($path)) {
                 abort(404);
             }
 
