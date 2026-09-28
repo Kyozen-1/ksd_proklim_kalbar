@@ -89,11 +89,15 @@ class TargetPenurunanEmisiController extends Controller
         }
         try {
             $kabupatenKotaId = Crypt::decryptString($request->kabupaten_kota_id);
-            $targetPenurunanEmisi = TargetPenurunanEmisi::where('kabupaten_kota_id', $kabupatenKotaId)
-                ->where('tahun', $request->tahun)
-                ->first() ?? new TargetPenurunanEmisi;
+            $cekTargetPenurunanEmisi = TargetPenurunanEmisi::where('kabupaten_kota_id', $kabupatenKotaId)
+                                        ->where('tahun', $request->tahun)->first();
+            if($cekTargetPenurunanEmisi)
+            {
+                $targetPenurunanEmisi = TargetPenurunanEmisi::find($cekTargetPenurunanEmisi->id);
+            } else {
+                $targetPenurunanEmisi = new TargetPenurunanEmisi;
+            }
             $targetPenurunanEmisi->kabupaten_kota_id = $kabupatenKotaId;
-            $targetPenurunanEmisi->tahun = $request->tahun;
             $targetPenurunanEmisi->nilai = $request->nilai;
             $targetPenurunanEmisi->save();
             PublicDashboardCache::invalidate('igrk');
