@@ -191,6 +191,10 @@ class SerapanKarbonProklimController extends Controller
                 'numeric',
                 'min:0'
             ],
+            'tanggal_pendataan' => [
+                'required',
+                'date',
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -215,10 +219,11 @@ class SerapanKarbonProklimController extends Controller
                 ]);
             }
             $serapanKarbonProklim->nilai = $request->nilai;
+            $serapanKarbonProklim->tanggal_pendataan = $request->tanggal_pendataan;
             $serapanKarbonProklim->save();
 
             return response()->json([
-                'success' => 'Berhasil mengubah nilai serapan karbon proklim.'
+                'success' => 'Berhasil mengubah serapan karbon proklim.'
             ]);
         } catch (\Throwable $th) {
 

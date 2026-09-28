@@ -191,6 +191,10 @@ class ReduksiEmisiProklimController extends Controller
                 'numeric',
                 'min:0'
             ],
+            'tanggal_pendataan' => [
+                'required',
+                'date',
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -215,10 +219,11 @@ class ReduksiEmisiProklimController extends Controller
                 ]);
             }
             $reduksiEmisiProklim->nilai = $request->nilai;
+            $reduksiEmisiProklim->tanggal_pendataan = $request->tanggal_pendataan;
             $reduksiEmisiProklim->save();
 
             return response()->json([
-                'success' => 'Berhasil mengubah nilai reduksi emisi proklim.'
+                'success' => 'Berhasil mengubah reduksi emisi proklim.'
             ]);
         } catch (\Throwable $th) {
 

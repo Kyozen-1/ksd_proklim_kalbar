@@ -228,6 +228,10 @@ class KualitasLingkunganController extends Controller
                 'numeric',
                 'min:0'
             ],
+            'tanggal_pendataan' => [
+                'required',
+                'date',
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -252,6 +256,7 @@ class KualitasLingkunganController extends Controller
                 ]);
             }
             $kualitasLingkungan->nilai = $request->nilai;
+            $kualitasLingkungan->tanggal_pendataan = $request->tanggal_pendataan;
             $kualitasLingkungan->save();
 
             return response()->json([

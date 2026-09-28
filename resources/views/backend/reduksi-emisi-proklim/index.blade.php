@@ -204,9 +204,9 @@
                         <tr>
                             <th width="5%"> No </th>
                             <th width="10%"> Aksi </th>
-                            <th> Proklim </th>
+                            <th width="20%"> Proklim </th>
                             <th width="10%"> Tahun </th>
-                            <th width="18%"> Nilai (tCO2e)</th>
+                            <th width="40%"> Nilai (tCO2e)</th>
                             <th width="15%"> Tanggal Pendataan </th>
                         </tr>
                     </thead>
@@ -362,7 +362,7 @@
                 {
                     data: 'tanggal_pendataan',
                     name: 'tanggal_pendataan',
-                    className: 'text-center'
+                    className: 'text-center td-tanggal-pendataan'
                 }
             ],
             order: [
@@ -477,10 +477,18 @@
             var rowElement = button.closest('tr');
             var row = dataTables.row(rowElement);
             var rowData = row.data();
+
             var nilai = String(rowData.nilai).replace(/\./g, '').replace(',', '.');
             var nilaiCell = rowElement.find('.td-nilai');
 
+            var tanggalPendataan = formatTanggal(rowData.tanggal_pendataan);
+            var tanggalPendataanCell = rowElement.find('.td-tanggal-pendataan');
+
             if (nilaiCell.find('.input-nilai').length > 0) {
+                return;
+            }
+
+            if (tanggalPendataanCell.find('.input-tanggal-pendataan').length > 0) {
                 return;
             }
 
@@ -498,6 +506,15 @@
                 </div>
             `);
 
+            tanggalPendataanCell.html(`
+                <input
+                    type="date"
+                    name="tanggal_pendataan"
+                    class="form-control input-tanggal-pendataan text-right"
+                    value="${tanggalPendataan}"
+                    data-original-value="${rowData.tanggal_pendataan}">
+            `);
+
             button
                 .removeClass('edit btn-warning')
                 .addClass('save-nilai btn-success')
@@ -505,15 +522,20 @@
                 .html('<i class="fas fa-save"></i>');
         });
 
-
         $(document).on('click', '.save-nilai', function () {
             var button = $(this);
             var id = button.attr('id');
             var rowElement = button.closest('tr');
+
             var nilaiInput = rowElement.find('.input-nilai');
             var nilai = nilaiInput.val();
             var nilaiAwal = nilaiInput.data('original-value');
             var nilaiCell = rowElement.find('.td-nilai');
+
+            var tanggalPendataanInput = rowElement.find('.input-tanggal-pendataan');
+            var tanggalPendataan = tanggalPendataanInput.val();
+            var tanggalPendataanAwal = tanggalPendataanInput.data('original-value');
+            var tanggalPendataanCell = rowElement.find('.td-tanggal-pendataan');
 
             if (nilai === '') {
                 Swal.fire({
@@ -522,6 +544,16 @@
                     text: 'Silakan masukkan nilai Reduksi Emisi Proklim.'
                 });
                 nilaiInput.focus();
+                return;
+            }
+
+            if (tanggalPendataan === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Tanggal pendataan belum diisi',
+                    text: 'Silakan masukkan tanggal pendataan Serapan Karbon Proklim.'
+                });
+                tanggalPendataanInput.focus();
                 return;
             }
 
@@ -551,7 +583,8 @@
                         data: {
                             _token: "{{ csrf_token() }}",
                             id: id,
-                            nilai: nilai
+                            nilai: nilai,
+                            tanggal_pendataan: tanggalPendataan,
                         },
                         dataType: "json",
                         beforeSend: function () {
@@ -595,6 +628,7 @@
                 }
                 else {
                     nilaiCell.text(nilaiAwal);
+                    tanggalPendataanCell.text(tanggalPendataanAwal);
                     button
                         .removeClass('save-nilai btn-success')
                         .addClass('edit btn-warning')
@@ -603,6 +637,27 @@
                 }
             });
         });
+
+        function formatTanggal(tanggal) {
+            let parts = tanggal.split(' ');
+
+            let bulan = {
+                Januari: '01',
+                Februari: '02',
+                Maret: '03',
+                April: '04',
+                Mei: '05',
+                Juni: '06',
+                Juli: '07',
+                Agustus: '08',
+                September: '09',
+                Oktober: '10',
+                November: '11',
+                Desember: '12'
+            };
+
+            return `${parts[2]}-${bulan[parts[1]]}-${parts[0].padStart(2, '0')}`;
+        }
     </script>
 
 @endsection

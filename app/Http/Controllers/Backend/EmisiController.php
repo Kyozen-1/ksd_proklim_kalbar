@@ -276,7 +276,11 @@ class EmisiController extends Controller
                 'required',
                 'numeric',
                 'min:0'
-            ]
+            ],
+            'tanggal_pendataan' => [
+                'required',
+                'date',
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -305,9 +309,10 @@ class EmisiController extends Controller
             }
 
             $emisi->nilai = $request->nilai;
+            $emisi->tanggal_pendataan = $request->tanggal_pendataan;
             $emisi->save();
             return response()->json([
-                'success' => 'Berhasil mengubah nilai emisi.'
+                'success' => 'Berhasil mengubah emisi.'
             ]);
         } catch (\Throwable $th) {
             return response()->json([

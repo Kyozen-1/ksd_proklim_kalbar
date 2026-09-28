@@ -227,6 +227,10 @@ class TimbulanLb3Controller extends Controller
                 'numeric',
                 'min:0'
             ],
+            'tanggal_pendataan' => [
+                'required',
+                'date',
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -251,6 +255,7 @@ class TimbulanLb3Controller extends Controller
                 ]);
             }
             $timbulanLb3->nilai = $request->nilai;
+            $timbulanLb3->tanggal_pendataan = $request->tanggal_pendataan;
             $timbulanLb3->save();
 
             return response()->json([
