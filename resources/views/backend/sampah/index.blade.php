@@ -231,16 +231,16 @@
                         <tr>
                             <th rowspan="2" width="5%"> No </th>
                             <th rowspan="2" width="10%"> Aksi </th>
-                            <th rowspan="2"> Kabupaten / Kota </th>
-                            <th rowspan="2"> Kategori</th>
-                            <th rowspan="2"> Tahun </th>
-                            <th colspan="3">(ton/tahun)</th>
-                            <th rowspan="2"> Tanggal Pendataan </th>
+                            <th rowspan="2" width="10%"> Kabupaten / Kota </th>
+                            <th rowspan="2" width="10%"> Kategori</th>
+                            <th rowspan="2" width="10%"> Tahun </th>
+                            <th colspan="3" width="45%">(ton/tahun)</th>
+                            <th rowspan="2" width="10%"> Tanggal Pendataan </th>
                         </tr>
                         <tr>
-                            <th> Nilai </th>
-                            <th> Terkelola </th>
-                            <th> Tidak Terkelola </th>
+                            <th width="30%"> Nilai </th>
+                            <th width="35%"> Terkelola </th>
+                            <th width="30%"> Tidak Terkelola </th>
                         </tr>
                     </thead>
                 </table>
@@ -420,7 +420,7 @@
                 {
                     data: 'tanggal_pendataan',
                     name: 'tanggal_pendataan',
-                    className: 'text-center'
+                    className: 'text-center td-tanggal-pendataan'
                 }
             ],
             order: [
@@ -539,10 +539,15 @@
             var rowElement = button.closest('tr');
             var row = dataTables.row(rowElement);
             var rowData = row.data();
+
             var nilai = String(rowData.nilai).replace(/\./g, '').replace(',', '.');
             var nilaiCell = rowElement.find('.td-nilai');
+
             var sampahTerkelola = String(rowData.sampah_terkelola).replace(/\./g, '').replace(',', '.');
             var sampahTerkelolaCell = rowElement.find('.td-sampah-terkelola');
+
+            var tanggalPendataan = formatTanggal(rowData.tanggal_pendataan);
+            var tanggalPendataanCell = rowElement.find('.td-tanggal-pendataan');
 
             if (nilaiCell.find('.input-nilai').length > 0) {
                 return;
@@ -574,6 +579,19 @@
                     data-original-value="${sampahTerkelola}">
             `);
 
+            if (tanggalPendataanCell.find('.input-tanggal-pendataan').length > 0) {
+                return;
+            }
+
+            tanggalPendataanCell.html(`
+                <input
+                    type="date"
+                    name="tanggal_pendataan"
+                    class="form-control input-tanggal-pendataan text-right"
+                    value="${tanggalPendataan}"
+                    data-original-value="${rowData.tanggal_pendataan}">
+            `);
+
             button
                 .removeClass('edit btn-warning')
                 .addClass('save-nilai btn-success')
@@ -595,6 +613,11 @@
             var sampahTerkelola = sampahTerkelolaInput.val();
             var sampahTerkelolaAwal = sampahTerkelolaInput.data('original-value');
             var sampahTerkelolaCell = rowElement.find('.td-sampah-terkelola');
+
+            var tanggalPendataanInput = rowElement.find('.input-tanggal-pendataan');
+            var tanggalPendataan = tanggalPendataanInput.val();
+            var tanggalPendataanAwal = tanggalPendataanInput.data('original-value');
+            var tanggalPendataanCell = rowElement.find('.td-tanggal-pendataan');
 
             if (nilai === '') {
                 Swal.fire({
@@ -636,6 +659,16 @@
                 return;
             }
 
+            if (tanggalPendataan === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Tanggal pendataan belum diisi',
+                    text: 'Silakan masukkan tanggal pendataan Serapan Karbon Proklim.'
+                });
+                tanggalPendataanInput.focus();
+                return;
+            }
+
             Swal.fire({
                 title: 'Apakah Anda Yakin Mengubah Ini?',
                 text: 'Nilai dan sampah terkelola akan diperbarui.',
@@ -653,7 +686,8 @@
                             _token: "{{ csrf_token() }}",
                             id: id,
                             nilai: nilai,
-                            sampah_terkelola: sampahTerkelola
+                            sampah_terkelola: sampahTerkelola,
+                            tanggal_pendataan: tanggalPendataan,
                         },
                         dataType: "json",
                         beforeSend: function () {
@@ -697,6 +731,8 @@
                 }
                 else {
                     nilaiCell.text(nilaiAwal);
+                    sampahTerkelolaCell.text(sampahTerkelolaAwal);
+                    tanggalPendataanCell.text(tanggalPendataanAwal);
                     button
                         .removeClass('save-nilai btn-success')
                         .addClass('edit btn-warning')
@@ -705,6 +741,27 @@
                 }
             });
         });
+
+        function formatTanggal(tanggal) {
+            let parts = tanggal.split(' ');
+
+            let bulan = {
+                Januari: '01',
+                Februari: '02',
+                Maret: '03',
+                April: '04',
+                Mei: '05',
+                Juni: '06',
+                Juli: '07',
+                Agustus: '08',
+                September: '09',
+                Oktober: '10',
+                November: '11',
+                Desember: '12'
+            };
+
+            return `${parts[2]}-${bulan[parts[1]]}-${parts[0].padStart(2, '0')}`;
+        }
     </script>
 
 @endsection

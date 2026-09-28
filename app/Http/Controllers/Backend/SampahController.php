@@ -256,6 +256,10 @@ class SampahController extends Controller
                 'numeric',
                 'min:0'
             ],
+            'tanggal_pendataan' => [
+                'required',
+                'date',
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -281,10 +285,11 @@ class SampahController extends Controller
             }
             $sampah->nilai = $request->nilai;
             $sampah->sampah_terkelola = $request->sampah_terkelola;
+            $sampah->tanggal_pendataan = $request->tanggal_pendataan;
             $sampah->save();
 
             return response()->json([
-                'success' => 'Berhasil mengubah nilai sampah.'
+                'success' => 'Berhasil mengubah sampah.'
             ]);
         } catch (\Throwable $th) {
 
