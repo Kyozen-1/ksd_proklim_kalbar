@@ -1,5 +1,5 @@
 @extends('backend.layouts.app')
-@section('title', 'Create | API Permission | Pengaturan | REDD++ Kalimantan Barat')
+@section('title', 'Create | API Permission | Pengaturan | PROKLIM Kalimantan Barat')
 @section('header', 'Create | API Permission | Pengaturan')
 
 @section('css')

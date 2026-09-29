@@ -1,5 +1,5 @@
 @extends('backend.layouts.app')
-@section('title', 'Section Landing Page | Master Data | REDD++ Kalimantan Barat')
+@section('title', 'Section Landing Page | Master Data | PROKLIM Kalimantan Barat')
 @section('header', 'Section Landing Page | Master Data')
 
 @section('css')

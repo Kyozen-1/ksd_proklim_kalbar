@@ -1,5 +1,5 @@
 @extends('backend.layouts.app')
-@section('title', 'Manajemen Akun | Pengaturan | REDD++ Kalimantan Barat')
+@section('title', 'Manajemen Akun | Pengaturan | PROKLIM Kalimantan Barat')
 @section('header', 'Manajemen Akun | Pengaturan')
 
 @section('css')

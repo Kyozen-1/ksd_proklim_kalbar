@@ -2,7 +2,7 @@
     <meta charset="utf-8" />
     <title>@yield('title', 'Login')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Login REDD++ Kalimantan Barat" name="description" />
+    <meta content="Login PROKLIM Kalimantan Barat" name="description" />
     <meta content="Kita Serba Digital" name="author" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     @include('shared.favicon')
