@@ -9,7 +9,6 @@ use App\Models\Dokumen;
 use App\Models\Faq;
 use App\Models\Kegiatan;
 use App\Models\LandingPageSection;
-use App\Models\MapLocation;
 use App\Models\PivotGambarBerita;
 use App\Models\PivotGambarKegiatan;
 use App\Models\Regency;
@@ -291,9 +290,19 @@ class HomeController extends Controller
             ->header('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
     }
 
-    public function data(MapDashboardService $dashboardService)
+    public function data(Request $request, MapDashboardService $dashboardService)
     {
-        return view('frontend.pages.data', ['mapConfig' => $dashboardService->pageConfig()]);
+        $initialFeature = $request->string('feature')->toString();
+        if (! array_key_exists($initialFeature, MapDashboardService::FEATURES)) {
+            $initialFeature = '';
+        }
+
+        return view('frontend.pages.data', [
+            'mapConfig' => [
+                ...$dashboardService->pageConfig(),
+                'initialFeature' => $initialFeature,
+            ],
+        ]);
     }
 
     public function mapMarkers(Request $request, MapDashboardService $dashboardService): JsonResponse
@@ -301,8 +310,8 @@ class HomeController extends Controller
         $validated = $request->validate([
             'search' => ['nullable', 'string', 'max:100'],
             'regency' => ['nullable', 'integer', 'exists:regencies,id'],
-            'features' => ['nullable', 'array', 'max:5'],
-            'features.*' => ['string', 'in:proklim,igrk,sampah,kualitas-lingkungan,lb3'],
+            'features' => ['nullable', 'array', 'max:1'],
+            'features.*' => ['string', 'in:proklim'],
             'bounds' => ['nullable', 'string', 'max:100'],
             'limit' => ['nullable', 'integer', 'min:1', 'max:500'],
         ]);
@@ -320,10 +329,10 @@ class HomeController extends Controller
             ->header('Cache-Control', 'public, max-age=60, stale-while-revalidate=30');
     }
 
-    public function mapMarker(MapLocation $mapLocation, MapDashboardService $dashboardService): JsonResponse
+    public function mapMarker(string $marker, MapDashboardService $dashboardService): JsonResponse
     {
         return response()
-            ->json($dashboardService->detail($mapLocation))
+            ->json($dashboardService->detail($marker))
             ->header('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
     }
 

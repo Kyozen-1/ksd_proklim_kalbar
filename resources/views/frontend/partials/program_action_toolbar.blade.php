@@ -40,7 +40,7 @@
             </div>
         </nav>
 
-        <a href="{{ route('data') }}" class="inline-flex items-center justify-center gap-3 rounded-xl bg-emerald-800 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
+        <a href="{{ route('data', ['feature' => $activeFeature]) }}" class="inline-flex items-center justify-center gap-3 rounded-xl bg-emerald-800 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
             <span>Peta Persebaran</span>
             <i class="fa-solid fa-chevron-right text-xs" aria-hidden="true"></i>
         </a>

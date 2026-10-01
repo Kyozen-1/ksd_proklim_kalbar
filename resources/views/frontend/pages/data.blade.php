@@ -1,7 +1,7 @@
 @extends('frontend.layouts.main')
 
 @section('title', 'Peta Persebaran Data Lingkungan Kalimantan Barat')
-@section('meta_description', 'Peta interaktif persebaran PROKLIM, IGRK, sampah, kualitas lingkungan, dan LB3 di Kalimantan Barat.')
+@section('meta_description', 'Peta interaktif persebaran PROKLIM di Kalimantan Barat.')
 @section('fullscreen', 'true')
 
 @section('content')
@@ -10,8 +10,9 @@
     x-data="environmentMap({
         features: @js($mapConfig['features']),
         regions: @js($mapConfig['regions']),
+        initialFeature: @js($mapConfig['initialFeature'] ?? ''),
         markersEndpoint: @js(route('map.markers')),
-        markerEndpointTemplate: @js(route('map.marker', ['mapLocation' => '__MARKER__']))
+        markerEndpointTemplate: @js(route('map.marker', ['marker' => '__MARKER__']))
     })"
 >
     <div x-ref="map" class="absolute inset-0 z-0" aria-label="Peta persebaran data lingkungan Kalimantan Barat"></div>
@@ -154,14 +155,14 @@
     window.environmentMap = function (config) {
         return {
             features: config.features, regions: config.regions, markersEndpoint: config.markersEndpoint, markerEndpointTemplate: config.markerEndpointTemplate,
-            map: null, markerLayer: null, baseLayers: {}, activeBaseLayer: null, search: '', regency: '', singleFeature: '',
+            map: null, markerLayer: null, baseLayers: {}, activeBaseLayer: null, search: '', regency: '', singleFeature: config.initialFeature || '',
             baseMaps: [
                 { key: 'satellite', label: 'Satelit', icon: 'fa-solid fa-satellite' },
                 { key: 'terrain', label: 'Terrain', icon: 'fa-solid fa-mountain-sun' },
                 { key: 'street', label: 'Jalan', icon: 'fa-solid fa-road' },
             ],
             activeBaseMap: 'satellite', baseMapOpen: false,
-            activeFeatures: Object.fromEntries(config.features.map(feature => [feature.key, true])),
+            activeFeatures: Object.fromEntries(config.features.map(feature => [feature.key, !config.initialFeature || feature.key === config.initialFeature])),
             loading: false, detailLoading: false, error: '', truncated: false, visibleCount: 0, selected: null, mobileLegendOpen: false,
             markerRequest: null, detailRequest: null, moveTimer: null,
 
