@@ -1,16 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Frontend\HomeController;
+use Illuminate\Support\Facades\Route;
 
-Route::prefix('login')->group(function(){
+Route::prefix('login')->group(function () {
     Route::get('/', [LoginController::class, 'index'])->name('login');
     Route::post('/', [LoginController::class, 'loginProcess'])->name('login-process');
 });
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
-@include('backend.php');
+@include 'backend.php';
 /*
 |--------------------------------------------------------------------------
 | Web Routes - Public Frontend
@@ -53,8 +53,7 @@ Route::get('/edukasi/aksi-lingkungan', [HomeController::class, 'aksiLingkungan']
 Route::get('/edukasi/aksi-lingkungan/{id}', [HomeController::class, 'aksiLingkunganDetail'])->name('aksi-lingkungan-detail');
 Route::get('/data-proklim', [HomeController::class, 'data'])->name('data');
 Route::get('/api/public/map/markers', [HomeController::class, 'mapMarkers'])->name('map.markers');
-Route::get('/api/public/map/markers/{mapLocation}', [HomeController::class, 'mapMarker'])
-    ->whereNumber('mapLocation')
+Route::get('/api/public/map/markers/{marker}', [HomeController::class, 'mapMarker'])
     ->name('map.marker');
 Route::get('/kontak', [HomeController::class, 'contact'])->name('contact');
 Route::get('/media/berita/{id}', [HomeController::class, 'beritaImage'])->name('frontend.berita.image');

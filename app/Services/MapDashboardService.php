@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\MapLocation;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\DataProklim;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -11,10 +11,6 @@ class MapDashboardService
 {
     public const FEATURES = [
         'proklim' => ['label' => 'Proklim', 'color' => '#d97706', 'icon' => 'fa-solid fa-leaf'],
-        'igrk' => ['label' => 'IGRK', 'color' => '#059669', 'icon' => 'fa-solid fa-wind'],
-        'sampah' => ['label' => 'Sampah', 'color' => '#b91c1c', 'icon' => 'fa-solid fa-trash-can'],
-        'kualitas-lingkungan' => ['label' => 'Kualitas Lingkungan', 'color' => '#0369a1', 'icon' => 'fa-solid fa-water'],
-        'lb3' => ['label' => 'LB3', 'color' => '#a21caf', 'icon' => 'fa-solid fa-flask'],
     ];
 
     public function pageConfig(): array
@@ -35,81 +31,118 @@ class MapDashboardService
     public function markers(array $filters): array
     {
         $limit = min((int) ($filters['limit'] ?? 500), 500);
-        $query = MapLocation::query()
-            ->where('status_aktif', true)
-            ->with('regency:id,name')
-            ->select(['id', 'regency_id', 'feature', 'title', 'category', 'latitude', 'longitude']);
-
         $features = array_values(array_intersect(
             $filters['features'] ?? array_keys(self::FEATURES),
             array_keys(self::FEATURES)
         ));
-        $query->whereIn('feature', $features);
 
-        if (!empty($filters['regency'])) {
-            $query->where('regency_id', $filters['regency']);
-        }
-
-        if (!empty($filters['search'])) {
-            $search = '%'.mb_strtolower($filters['search']).'%';
-            $query->where(function (Builder $query) use ($search) {
-                $query->whereRaw('LOWER(title) LIKE ?', [$search])
-                    ->orWhereRaw('LOWER(category) LIKE ?', [$search])
-                    ->orWhereRaw('LOWER(address) LIKE ?', [$search]);
-            });
-        }
-
-        if (!empty($filters['bounds'])) {
-            [$west, $south, $east, $north] = $filters['bounds'];
-            $query->whereBetween('latitude', [$south, $north])
-                ->whereBetween('longitude', [$west, $east]);
-        }
-
-        $locations = $query->orderBy('id')->limit($limit + 1)->get();
-        $truncated = $locations->count() > $limit;
+        $markers = in_array('proklim', $features, true)
+            ? $this->proklimMarkers($filters, $limit + 1)
+            : collect();
 
         return [
-            'markers' => $locations->take($limit)->map(fn (MapLocation $location) => [
-                'id' => $location->id,
-                'feature' => $location->feature,
-                'title' => $location->title,
-                'category' => $location->category,
-                'region' => $location->regency?->name,
-                'latitude' => $location->latitude,
-                'longitude' => $location->longitude,
-            ])->values()->all(),
-            'count' => min($locations->count(), $limit),
-            'truncated' => $truncated,
+            'markers' => $markers->take($limit)->all(),
+            'count' => min($markers->count(), $limit),
+            'truncated' => $markers->count() > $limit,
             'limit' => $limit,
         ];
     }
 
-    public function detail(MapLocation $location): array
+    public function detail(string $markerKey): array
     {
-        abort_unless($location->status_aktif, 404);
-        $location->loadMissing('regency:id,name');
+        if (preg_match('/^proklim-(\d+)$/', $markerKey, $matches) === 1) {
+            return $this->proklimDetail((int) $matches[1]);
+        }
+
+        abort(404);
+    }
+
+    private function proklimMarkers(array $filters, int $limit): Collection
+    {
+        $query = DB::table('data_proklims as proklim')
+            ->leftJoin('regencies as regency', 'regency.id', '=', 'proklim.kabupaten_kota_id')
+            ->leftJoin('md_kategori_proklims as category', 'category.id', '=', 'proklim.kategori_proklim_id')
+            ->whereNotNull('proklim.lat')
+            ->whereNotNull('proklim.lng')
+            ->where('proklim.lat', '!=', '')
+            ->where('proklim.lng', '!=', '');
+
+        if (! empty($filters['regency'])) {
+            $query->where('proklim.kabupaten_kota_id', $filters['regency']);
+        }
+
+        if (! empty($filters['search'])) {
+            $search = '%'.mb_strtolower($filters['search']).'%';
+            $query->where(function ($query) use ($search) {
+                $query->whereRaw('LOWER(proklim.nama) LIKE ?', [$search])
+                    ->orWhereRaw('LOWER(proklim.alamat) LIKE ?', [$search])
+                    ->orWhereRaw('LOWER(proklim.deskripsi) LIKE ?', [$search])
+                    ->orWhereRaw('LOWER(category.nama) LIKE ?', [$search]);
+            });
+        }
+
+        if (! empty($filters['bounds'])) {
+            [$west, $south, $east, $north] = $filters['bounds'];
+            $coordinateType = DB::connection()->getDriverName() === 'sqlite' ? 'REAL' : 'DECIMAL(20, 10)';
+            $query->whereRaw("CAST(proklim.lat AS {$coordinateType}) BETWEEN ? AND ?", [$south, $north])
+                ->whereRaw("CAST(proklim.lng AS {$coordinateType}) BETWEEN ? AND ?", [$west, $east]);
+        }
+
+        return $query
+            ->orderBy('proklim.id')
+            ->limit($limit)
+            ->get([
+                'proklim.id',
+                'proklim.nama',
+                'proklim.lat',
+                'proklim.lng',
+                'category.nama as category_name',
+                'regency.name as region_name',
+            ])
+            ->filter(fn ($location) => is_numeric($location->lat) && is_numeric($location->lng))
+            ->map(fn ($location) => [
+                'id' => 'proklim-'.$location->id,
+                'feature' => 'proklim',
+                'title' => $location->nama ?: 'Lokasi PROKLIM',
+                'category' => $location->category_name,
+                'region' => $location->region_name,
+                'latitude' => (float) $location->lat,
+                'longitude' => (float) $location->lng,
+            ])
+            ->values();
+    }
+
+    private function proklimDetail(int $id): array
+    {
+        $proklim = DataProklim::with([
+            'kabupaten_kota:id,name',
+            'kecamatan:id,name',
+            'kelurahan:id,name',
+            'kategori_proklim:id,nama',
+        ])->findOrFail($id);
+
+        abort_unless(is_numeric($proklim->lat) && is_numeric($proklim->lng), 404);
+
+        $administrativeArea = collect([
+            $proklim->kelurahan?->name,
+            $proklim->kecamatan?->name,
+        ])->filter()->implode(', ');
 
         return [
-            'id' => $location->id,
-            'feature' => $location->feature,
-            'feature_label' => self::FEATURES[$location->feature]['label'] ?? $location->feature,
-            'title' => $location->title,
-            'category' => $location->category,
-            'region' => $location->regency?->name,
-            'address' => $location->address,
-            'description' => $location->description,
-            'metric' => $location->metric_label ? [
-                'label' => $location->metric_label,
-                'value' => $location->metric_value,
-                'unit' => $location->metric_unit,
-            ] : null,
-            'additional_info' => $location->additional_info,
-            'source_url' => $location->source_url,
-            'image_url' => $location->image_url
-                ? (str_starts_with($location->image_url, 'http') ? $location->image_url : asset(ltrim($location->image_url, '/')))
-                : null,
-            'latitude' => $location->latitude,
-            'longitude' => $location->longitude,
+            'id' => 'proklim-'.$proklim->id,
+            'feature' => 'proklim',
+            'feature_label' => self::FEATURES['proklim']['label'],
+            'title' => $proklim->nama ?: 'Lokasi PROKLIM',
+            'category' => $proklim->kategori_proklim?->nama,
+            'region' => $proklim->kabupaten_kota?->name,
+            'address' => $proklim->alamat,
+            'description' => $proklim->deskripsi,
+            'metric' => null,
+            'additional_info' => $administrativeArea ?: null,
+            'source_url' => null,
+            'image_url' => null,
+            'latitude' => (float) $proklim->lat,
+            'longitude' => (float) $proklim->lng,
         ];
     }
 }
