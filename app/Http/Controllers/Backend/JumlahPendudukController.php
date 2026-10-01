@@ -89,9 +89,14 @@ class JumlahPendudukController extends Controller
         }
         try {
             $kabupatenKotaId = Crypt::decryptString($request->kabupaten_kota_id);
-            $jumlahPenduduk = JumlahPenduduk::where('kabupaten_kota_id', $kabupatenKotaId)
-                ->where('tahun', $request->tahun)
-                ->first() ?? new JumlahPenduduk;
+            $cekJumlahPenduduk = JumlahPenduduk::where('kabupaten_kota_id', $kabupatenKotaId)
+                                    ->where('tahun', $request->tahun)->first();
+            if($cekJumlahPenduduk)
+            {
+                $jumlahPenduduk = JumlahPenduduk::find($cekJumlahPenduduk->id);
+            } else {
+                $jumlahPenduduk = new JumlahPenduduk;
+            }
             $jumlahPenduduk->kabupaten_kota_id = $kabupatenKotaId;
             $jumlahPenduduk->tahun = $request->tahun;
             $jumlahPenduduk->nilai = $request->nilai;
@@ -158,6 +163,8 @@ class JumlahPendudukController extends Controller
                         'Kabupaten/Kota dan tahun tidak dapat diubah. Data harus sesuai dengan data yang tersimpan.'
                     ]
                 ]);
+            } else {
+                $jumlahPenduduk->tahun = $request->tahun;
             }
             $jumlahPenduduk->kabupaten_kota_id = $kabupatenKotaId;
             $jumlahPenduduk->tahun = $request->tahun;
