@@ -54,6 +54,7 @@
                                             <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-[#00a879]"><i class="fa-solid fa-wind" aria-hidden="true"></i></span>
                                             <div>
                                                 <p class="text-xs font-semibold uppercase leading-5 tracking-wide text-slate-500">Total Emisi Tahunan</p>
+                                                <p class="mt-1 text-[10px] font-semibold leading-4 tracking-wide text-slate-500">(Akumulasi)</p>
                                                 <p class="mt-2 text-3xl font-extrabold leading-tight text-slate-900" x-text="formatValue(regionData[region.id].summary.net_emission, 'tco2e')"></p>
                                                 <span class="mt-4 inline-flex rounded-full border border-emerald-400 px-3 py-1.5 text-xs font-medium text-[#00a879]" x-text="`${year}: ${formatValue(regionData[region.id].summary.net_emission_in_year, 'tco2e')}`"></span>
                                             </div>
@@ -65,6 +66,7 @@
                                             <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-[#00a879]"><i class="fa-solid fa-bullseye" aria-hidden="true"></i></span>
                                             <div>
                                                 <p class="text-xs font-semibold uppercase leading-5 tracking-wide text-slate-500">Target Penurunan Emisi</p>
+                                                <p class="mt-1 text-[10px] font-semibold leading-4 tracking-wide text-slate-500">(Akumulasi)</p>
                                                 <p class="mt-2 text-3xl font-extrabold leading-tight text-slate-900" x-text="formatValue(regionData[region.id].summary.target_reduction, 'tco2e')"></p>
                                                 <span class="mt-4 inline-flex rounded-full border border-emerald-400 px-3 py-1.5 text-xs font-medium text-[#00a879]" x-text="`${year}: ${formatValue(regionData[region.id].summary.target_reduction_in_year, 'tco2e')}`"></span>
                                             </div>
@@ -99,6 +101,7 @@
                                                                 <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-[#00a879]"><i :class="typeIcon(type)" aria-hidden="true"></i></span>
                                                                 <div class="min-w-0">
                                                                     <p class="text-sm font-medium leading-5 text-slate-500" x-text="type.name"></p>
+                                                                    <p class="mt-1 text-xs font-medium leading-4 text-slate-500">(Akumulasi)</p>
                                                                     <p class="mt-2 text-xl font-extrabold leading-tight text-slate-900" x-text="formatValue(type.total, type.unit)"></p>
                                                                     <span class="mt-3 inline-flex rounded-full border border-emerald-400 px-3 py-1.5 text-xs font-medium text-[#00a879]" x-text="`${year}: ${formatValue(type.year_total, type.unit)}`"></span>
                                                                 </div>
