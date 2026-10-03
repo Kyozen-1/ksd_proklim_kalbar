@@ -99,6 +99,7 @@ class TargetPenurunanEmisiController extends Controller
             }
             $targetPenurunanEmisi->kabupaten_kota_id = $kabupatenKotaId;
             $targetPenurunanEmisi->nilai = $request->nilai;
+            $targetPenurunanEmisi->tahun = $request->tahun;
             $targetPenurunanEmisi->save();
             PublicDashboardCache::invalidate('igrk');
 
