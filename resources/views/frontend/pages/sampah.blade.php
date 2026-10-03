@@ -57,6 +57,7 @@
                                                 <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-[#009F6E]"><i :class="card.icon" aria-hidden="true"></i></span>
                                                 <div class="min-w-0">
                                                     <p class="text-xs font-semibold uppercase leading-5 tracking-wide text-slate-500" x-text="card.label"></p>
+                                                    <p class="mt-1 text-[10px] font-semibold leading-4 tracking-wide text-slate-500">(Tahun Berjalan)</p>
                                                     <p class="mt-2 text-2xl font-extrabold leading-tight tracking-tight text-slate-900" x-text="card.value"></p>
                                                     <span class="mt-4 inline-flex rounded-full border border-emerald-400 px-3 py-1.5 text-xs font-medium text-[#009F6E]" x-text="`${regionData[region.id].previous_year}: ${card.previousValue}`"></span>
                                                 </div>
@@ -72,6 +73,7 @@
                                                 <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-[#009F6E]"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></span>
                                                 <div class="min-w-0">
                                                     <p class="text-xs font-semibold uppercase leading-5 tracking-wide text-slate-500" x-text="`Rata-rata Sampah ${category.name}`"></p>
+                                                    <p class="mt-1 text-[10px] font-semibold leading-4 tracking-wide text-slate-500">(Tahun Berjalan)</p>
                                                     <p class="mt-2 text-2xl font-extrabold leading-tight tracking-tight text-slate-900" x-text="formatTon(category.total, 'ton/tahun')"></p>
                                                     <span class="mt-4 inline-flex rounded-full border border-emerald-400 px-3 py-1.5 text-xs font-medium text-[#009F6E]" x-text="`${regionData[region.id].previous_year}: ${formatTon(category.previous_total, 'ton/tahun')}`"></span>
                                                 </div>
@@ -89,6 +91,7 @@
                                                     <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-[#009F6E]"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></span>
                                                     <div class="min-w-0">
                                                         <p class="text-xs font-semibold uppercase leading-5 tracking-wide text-slate-500" x-text="card.label"></p>
+                                                        <p class="mt-1 text-[10px] font-semibold leading-4 tracking-wide text-slate-500">(Tahun Berjalan)</p>
                                                         <p class="mt-2 text-2xl font-extrabold leading-tight tracking-tight text-slate-900" x-text="card.value"></p>
                                                         <span class="mt-4 inline-flex rounded-full border border-emerald-400 px-3 py-1.5 text-xs font-medium text-[#009F6E]" x-text="`${regionData[region.id].previous_year}: ${card.previousValue}`"></span>
                                                     </div>

@@ -62,6 +62,7 @@
                                                 <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-[#00a879]"><i :class="card.icon" aria-hidden="true"></i></span>
                                                 <div class="min-w-0">
                                                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-500" x-text="card.label"></p>
+                                                    <p class="mt-1 text-[10px] font-semibold leading-4 tracking-wide text-slate-500">(Akumulasi)</p>
                                                     <p class="mt-1 text-3xl font-extrabold leading-none tracking-tight text-slate-900" x-text="card.value"></p>
                                                     <span class="mt-3 inline-flex rounded-full border border-emerald-400 px-2.5 py-1 text-xs font-medium text-[#00a879]" x-text="`${year}: ${card.yearValue}`"></span>
                                                 </div>
@@ -77,6 +78,7 @@
                                                 <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-[#00a879]"><i class="fa-solid fa-house" aria-hidden="true"></i></span>
                                                 <div class="min-w-0">
                                                     <p class="text-xs font-semibold uppercase leading-5 tracking-wide text-slate-500" x-text="'Total Sebaran PROKLIM Kategori ' + category.name"></p>
+                                                    <p class="mt-1 text-[10px] font-semibold leading-4 tracking-wide text-slate-500">(Akumulasi)</p>
                                                     <p class="mt-1 text-2xl font-extrabold leading-none text-slate-900" x-text="formatNumber(category.total) + ' Titik'"></p>
                                                     <span class="mt-3 inline-flex rounded-full border border-emerald-400 px-2.5 py-1 text-xs font-medium text-[#00a879]" x-text="`${year}: ${formatNumber(category.year_total)} Titik`"></span>
                                                 </div>
